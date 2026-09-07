@@ -5,24 +5,28 @@ BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
 
+room = "A109"
+level = "0"
+
+
 
 # Skapa en hvac med sensor och actuator i a109
-payload = {"id":"hvac-A109","name":"HVAC A109","type":"ac_unit","category":"hvac","level":"level0","room":"A109","status":"running"}
+payload = {"id":f"hvac-{room}","name":f"HVAC {room}","type":"ac_unit","category":"hvac","level":f"level{level}","room":room,"status":"stopped"}
 response = requests.post(str(BASE+"api/equipment"), json=payload, headers=headers)
 print(response.json())
 
-payload = {"id":"A109-temp","name":"Temperature","type":"temperature","data_type":"text","unit":"°C","value":"18.0"}
-response = requests.post(str(BASE+"api/equipment/hvac-A109/sensors"), json=payload, headers=headers)
+payload = {"id":f"{room}-temp","name":"Temperature","type":"temperature","data_type":"text","unit":"°C","value":"18.0"}
+response = requests.post(str(BASE+f"api/equipment/hvac-{room}/sensors"), json=payload, headers=headers)
 print(response.json())
 
-payload = {"id":"A109-set","name":"Setpoint","type":"setpoint","state":"21"}
-response = requests.post(str(BASE+"api/equipment/hvac-A109/actuators"), json=payload, headers=headers)
+payload = {"id":f"{room}-set","name":"Setpoint","type":"setpoint","state":"21"}
+response = requests.post(str(BASE+f"api/equipment/hvac-{room}/actuators"), json=payload, headers=headers)
 print(response.json())
 
-response = requests.get(str(BASE+'api/equipment/hvac-A109'))
+response = requests.get(str(BASE+f'api/equipment/hvac-{room}'))
 object = json.loads(response.text)
 print(object)
 
-payload = {"data_type": "text", "value": str(round(18,2))}
-response = requests.put(str(BASE+"api/sensors/A109-temp/value"), json=payload, headers=headers)
+payload = {"data_type": "text", "value": str(round(21,2))}
+response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
 print(response.json())
