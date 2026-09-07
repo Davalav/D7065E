@@ -1,12 +1,13 @@
 import requests
 import json
+import sys
 
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
 
-room = "A109"
-level = "0"
+level = sys.argv[1] if len(sys.argv) >1 else "0"
+room = sys.argv[2] if len(sys.argv) >2 else "A109"
 
 
 

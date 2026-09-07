@@ -1,12 +1,13 @@
 import requests
 import json
 from time import sleep
-
+import sys
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
 T_outside = 0
-
+level = sys.argv[1] if len(sys.argv) >1 else "0"
+room = sys.argv[2] if len(sys.argv) >2 else "A109"
 def format_seconds(seconds: float) -> str:
     """
     Convert a float number of seconds into a human-readable string.
@@ -30,7 +31,7 @@ def format_seconds(seconds: float) -> str:
     #    return f"{sign}{abs_seconds / 86400:.3f} days"
 
 def step(BASE, curTemp,volume,deltaT,watt):
-    response = requests.get(f'{BASE}api/actuators/A109-set')
+    response = requests.get(f'{BASE}api/actuators/{room}-set')
     object = json.loads(response.text)
     setTemp = float(object["state"])
     #print(setTemp)
@@ -60,37 +61,38 @@ def step(BASE, curTemp,volume,deltaT,watt):
     print(f"time to equil: {format_seconds(t)}")
     #temp += 0.2*(setTemp-temp)
     payload = {"data_type": "text", "value": str(round(curTemp,2))}
-    response = requests.put(str(BASE+"api/sensors/A109-temp/value"), json=payload, headers=headers)
+    response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
     #print(response.json())
     print(curTemp)
     return curTemp
 
 # Get Area
-response = requests.get(f'{BASE}api/building/floors/level0')
+response = requests.get(f'{BASE}api/building/floors/level{level}')
 object = json.loads(response.text)
 rooms = object["rooms"]
-a109_area = rooms[97]['area']
+a109_area = next((rum for rum in rooms if rum["name"]== room),None)['area']
+#a109_area = rooms[97]['area']
 print(rooms[97])
 
 # Get temperature
-response = requests.get(f'{BASE}api/sensors/A109-temp')
+response = requests.get(f'{BASE}api/sensors/{room}-temp')
 object = json.loads(response.text)
 print(object["value"])
 temp = float(object["value"])
 
 # Set Hvac running
-response = requests.get(str(BASE+f'api/equipment/hvac-A109'))
+response = requests.get(str(BASE+f'api/equipment/hvac-{room}'))
 payload = json.loads(response.text)
 payload["status"] = "running"
-response = requests.put(str(BASE+"api/equipment/hvac-A109"), json=payload, headers=headers)
+response = requests.put(str(BASE+f"api/equipment/hvac-{room}"), json=payload, headers=headers)
 print(response.json())
 
 for i in range(100):
     temp = step(BASE, temp, a109_area*3,60*60,500)
-    sleep(5)
+    sleep(1)
 
 # Set Hvac stopped    
 payload["sensors"][0]["value"]=str(round(temp,2))
 payload["status"] = "stopped"
-response = requests.put(str(BASE+"api/equipment/hvac-A109"), json=payload, headers=headers)
+response = requests.put(str(BASE+f"api/equipment/hvac-{room}"), json=payload, headers=headers)
 print(response.json())
