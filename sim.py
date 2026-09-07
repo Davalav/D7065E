@@ -5,7 +5,7 @@ from time import sleep
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
-T_outside = -40
+T_outside = 0
 
 def format_seconds(seconds: float) -> str:
     """
@@ -48,9 +48,7 @@ def step(BASE, curTemp,volume,deltaT,watt):
     cp = 1000
     m = volume*1.225
     
-    #Time to equilibrium
-    t=(m*cp*(setTemp-curTemp))/(watt-wattLoss)
-    print(f"time to equil: {format_seconds(t)}")
+    #Time to equilibrium (Inte helt korrekt då värmeförlusten är logaritmisk)
     
     curTemp -= (wattLoss*deltaT)/(m*cp)
     if(curTemp < setTemp):
@@ -58,10 +56,12 @@ def step(BASE, curTemp,volume,deltaT,watt):
         watt = min(watt,(m*cp*abs(setTemp-curTemp))/deltaT)
         
         curTemp += (watt*deltaT)/(m*cp)
+    t=(m*cp*(setTemp-curTemp))/(watt-wattLoss)
+    print(f"time to equil: {format_seconds(t)}")
     #temp += 0.2*(setTemp-temp)
     payload = {"data_type": "text", "value": str(round(curTemp,2))}
     response = requests.put(str(BASE+"api/sensors/A109-temp/value"), json=payload, headers=headers)
-    print(response.json())
+    #print(response.json())
     print(curTemp)
     return curTemp
 
