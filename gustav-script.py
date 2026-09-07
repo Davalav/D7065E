@@ -27,6 +27,6 @@ response = requests.get(str(BASE+f'api/equipment/hvac-{room}'))
 object = json.loads(response.text)
 print(object)
 
-payload = {"data_type": "text", "value": str(round(21,2))}
+payload = {"data_type": "text", "value": str(round(10,2))}
 response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
 print(response.json())
