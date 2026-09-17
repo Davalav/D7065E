@@ -12,25 +12,6 @@ headers = {
     "Content-Type": "application/json"
 }
 
-co2_equipment = {
-    "id": f"co2-{room}",
-    "name": f"CO2 Sensor {room}",
-    "type": "co2_sensor",
-    "category": "monitoring",
-    "level": "level0",
-    "room": room,
-    "status": "running"
-}
-
-response = requests.post(
-    f"{BASE}api/equipment",
-    json=co2_equipment,
-    headers=headers
-)
-
-print(response.status_code)
-print(response.text)
-
 occupancy_equipment = {
     "id": f"occupancy-{room}",
     "name": f"Occupancy Counter {room}",
@@ -47,5 +28,22 @@ response = requests.post(
     headers=headers
 )
 
-print(response.status_code)
-print(response.text)
+print("Equipment:", response.status_code, response.text)
+
+
+occupancy_sensor = {
+    "id": f"{room}-occupancy",
+    "name": "Occupancy",
+    "type": "occupancy",
+    "data_type": "text",
+    "unit": "people",
+    "value": "0"
+}
+
+response = requests.post(
+    f"{BASE}api/equipment/occupancy-{room}/sensors",
+    json=occupancy_sensor,
+    headers=headers
+)
+
+print("Sensor:", response.status_code, response.text)
