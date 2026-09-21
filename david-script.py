@@ -66,11 +66,11 @@ response = requests.post(
 
 print("Sensor:", response.status_code, response.text)
 
-occupany = 5
+occupancy = 5
 
 payload = {
     "data_type": "text",
-    "value": str(occupany)
+    "value": str(occupancy)
 }
 
 response = requests.put(
@@ -98,6 +98,8 @@ PUT
 # -----------------------------
 # CO2
 # -----------------------------
+co2 = 420
+
 
 co2_equipment = {
     "id": f"co2-{room}",
@@ -125,7 +127,7 @@ co2_sensor = {
     "type": "co2",
     "data_type": "text",
     "unit": "ppm",
-    "value": "420"
+    "value": str(co2)
 }
 
 # Skapar CO2-sensorn under equipmentet
@@ -135,11 +137,30 @@ response = requests.post(
     headers=headers
 )
 
+
 print("CO2 sensor:", response.status_code, response.text)
 
+def step(BASE, curco2, volume, deltaT, occupancy):
 
-# CO2-värdet som vi kan ändra senare
-co2 = 650
+    # Enkel testmodell:
+    # varje person ökar CO2 med 10 ppm per steg
+    curco2 += occupancy * 10
+
+    payload = {
+        "data_type": "text",
+        "value": str(round(curco2, 2))
+    }
+
+    response = requests.put(
+        f"{BASE}api/sensors/{room}-co2/value",
+        json=payload,
+        headers=headers
+    )
+
+    print("Updated CO2:", response.status_code, response.text)
+    print("CO2:", curco2)
+
+    return curco2
 
 payload = {
     "data_type": "text",
@@ -154,3 +175,5 @@ response = requests.put(
 )
 
 print("Updated CO2:", response.status_code, response.text)
+
+co2 = step(BASE, co2, 100, 60, occupancy)
