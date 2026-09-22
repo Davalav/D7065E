@@ -1,4 +1,5 @@
 import requests
+import pandas as pd
 
 BASE = "http://127.0.0.1:9090/"
 room = "A109"
@@ -26,6 +27,13 @@ PUT sensor value
 A109-occupancy ändras till value = 5
 """
 
+dfs = pd.read_excel(
+    "LectureTable.xlsx",
+    sheet_name=["Sheet1", "Sheet2"]
+)
+
+print(dfs["Sheet1"].head())
+print(dfs["Sheet2"].head())
 
 occupancy_equipment = {
     "id": f"occupancy-{room}",
