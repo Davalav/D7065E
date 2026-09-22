@@ -27,13 +27,26 @@ PUT sensor value
 A109-occupancy ändras till value = 5
 """
 
-dfs = pd.read_excel(
-    "LectureTable.xlsx",
-    sheet_name=["Sheet1", "Sheet2"]
-)
+dfs = pd.read_excel("LectureTable.xlsx",sheet_name=["Sheet1", "Sheet2"])
 
 print(dfs["Sheet1"].head())
 print(dfs["Sheet2"].head())
+
+schedule = dfs["Sheet2"]
+
+row = schedule[schedule["Pass"] == 1].iloc[0]
+
+lektion = row["Lektion"] == "Ja"
+
+if lektion:
+    occupancy = 22
+else:
+    occupancy = 0
+
+print("Pass:", row["Pass"])
+print("Lektion:", lektion)
+print("Occupancy:", occupancy)
+
 
 occupancy_equipment = {
     "id": f"occupancy-{room}",
