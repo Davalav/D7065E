@@ -1,9 +1,14 @@
 {
     "rooms": [
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A110"
+            "floor": 0,
+            "walls": 2
+        },
+        {
+            "name": "A105"
+            "floor": 0,
+            "walls": 2
         },
         {
             "name": "A106"
@@ -173,9 +178,9 @@
             "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "154",
+            "floor": 0,
+            "walls": 8
         },
         {
             "name":
@@ -371,6 +376,81 @@
             "name": "A183",
             "floor": 0,
             "walls": 8.3
+        },
+        {
+            "name": "A30",
+            "floor": 0,
+            "walls": 18
+        },
+        {
+            "name": "303",
+            "floor": 0,
+            "walls": 9
+        },
+        {
+            "name": "A304",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A305",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A306",
+            "floor": 0,
+            "walls": 4
+        },
+        {
+            "name": "A307",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name":
+            "floor":
+            "walls":
+        },
+        {
+            "name":
+            "floor":
+            "walls":
+        },
+        {
+            "name":
+            "floor":
+            "walls":
+        },
+        {
+            "name":
+            "floor":
+            "walls":
+        },
+        {
+            "name":
+            "floor":
+            "walls":
+        },
+        {
+            "name":
+            "floor":
+            "walls":
+        },
+        {
+            "name":
+            "floor":
+            "walls":
+        },
+        {
+            "name":
+            "floor":
+            "walls":
+        },
+        {
+            "name":
+            "floor":
+            "walls":
         },
         {
             "name":
