@@ -1,52 +1,32 @@
 import requests
 import pandas as pd
+import time
 
 BASE = "http://127.0.0.1:9090/"
 room = "A109"
-
-"""
-go build -o buildsim ./cmd
-./buildsim start --port 9090
-"""
 
 headers = {
     "Content-Type": "application/json"
 }
 
-"""
-POST equipment
-      ↓
-occupancy-A109 skapas
+# --------------------------------------------------
+# LÄS EXCEL
+# --------------------------------------------------
 
-POST sensor
-      ↓
-A109-occupancy skapas med value = 0
-
-PUT sensor value
-      ↓
-A109-occupancy ändras till value = 5
-"""
-
-dfs = pd.read_excel("LectureTable.xlsx",sheet_name=["Sheet1", "Sheet2"])
+dfs = pd.read_excel(
+    "LectureTable.xlsx",
+    sheet_name=["Sheet1", "Sheet2"]
+)
 
 print(dfs["Sheet1"].head())
 print(dfs["Sheet2"].head())
 
 schedule = dfs["Sheet2"]
 
-row = schedule[schedule["Pass"] == 1].iloc[0]
 
-lektion = row["Lektion"] == "Ja"
-
-if lektion:
-    occupancy = 22
-else:
-    occupancy = 0
-
-print("Pass:", row["Pass"])
-print("Lektion:", lektion)
-print("Occupancy:", occupancy)
-
+# --------------------------------------------------
+# SKAPA OCCUPANCY EQUIPMENT
+# --------------------------------------------------
 
 occupancy_equipment = {
     "id": f"occupancy-{room}",
@@ -58,16 +38,18 @@ occupancy_equipment = {
     "status": "running"
 }
 
-
-# Skapar equipment-objektet
 response = requests.post(
     f"{BASE}api/equipment",
     json=occupancy_equipment,
     headers=headers
 )
 
-print("Equipment:", response.status_code, response.text)
+print("Occupancy equipment:", response.status_code, response.text)
 
+
+# --------------------------------------------------
+# SKAPA OCCUPANCY SENSOR
+# --------------------------------------------------
 
 occupancy_sensor = {
     "id": f"{room}-occupancy",
@@ -75,52 +57,21 @@ occupancy_sensor = {
     "type": "occupancy",
     "data_type": "text",
     "unit": "people",
-    "value": "4"
+    "value": "0"
 }
 
-# skapar sensorn som ligger under equipmentet
 response = requests.post(
     f"{BASE}api/equipment/occupancy-{room}/sensors",
     json=occupancy_sensor,
     headers=headers
 )
 
-print("Sensor:", response.status_code, response.text)
-
-occupancy = 5
-
-payload = {
-    "data_type": "text",
-    "value": str(occupancy)
-}
-
-response = requests.put(
-    f"{BASE}api/sensors/{room}-occupancy/value",
-    json=payload,
-    headers=headers
-)
-
-print("Updated occupancy:", response.status_code, response.text)
-
-"""
-POST 1
-→ skapa equipment
-
-POST 2
-→ skapa sensor med startvärde
-
-PUT
-→ ändra sensorvärdet senare
-"""
+print("Occupancy sensor:", response.status_code, response.text)
 
 
-
-
-# -----------------------------
-# CO2
-# -----------------------------
-co2 = 420
-
+# --------------------------------------------------
+# SKAPA CO2 EQUIPMENT
+# --------------------------------------------------
 
 co2_equipment = {
     "id": f"co2-{room}",
@@ -132,7 +83,6 @@ co2_equipment = {
     "status": "running"
 }
 
-# Skapar CO2-equipment
 response = requests.post(
     f"{BASE}api/equipment",
     json=co2_equipment,
@@ -142,59 +92,149 @@ response = requests.post(
 print("CO2 equipment:", response.status_code, response.text)
 
 
+# --------------------------------------------------
+# SKAPA CO2 SENSOR
+# --------------------------------------------------
+
 co2_sensor = {
     "id": f"{room}-co2",
     "name": "CO2",
     "type": "co2",
     "data_type": "text",
     "unit": "ppm",
-    "value": str(co2)
+    "value": "420"
 }
 
-# Skapar CO2-sensorn under equipmentet
 response = requests.post(
     f"{BASE}api/equipment/co2-{room}/sensors",
     json=co2_sensor,
     headers=headers
 )
 
-
 print("CO2 sensor:", response.status_code, response.text)
 
-def step(BASE, curco2, volume, deltaT, occupancy):
 
-    # Enkel testmodell:
-    # varje person ökar CO2 med 10 ppm per steg
-    curco2 += occupancy * 10
+# --------------------------------------------------
+# STARTVÄRDEN FÖR SIMULATION
+# --------------------------------------------------
 
-    payload = {
+simulation_time = pd.Timestamp("2026-09-21 08:00")
+end_time = pd.Timestamp("2026-09-21 18:00")
+
+occupancy = 0
+co2 = 420
+
+
+# --------------------------------------------------
+# SIMULATION
+# --------------------------------------------------
+
+while simulation_time <= end_time:
+
+    current_time = simulation_time.time()
+
+    # Hitta aktivt pass för rummet
+    active = schedule[
+        (schedule["Klassrum"] == room) &
+        (schedule["Start"] <= current_time) &
+        (schedule["Slut"] > current_time)
+    ]
+
+    # Finns det ett aktivt pass?
+    if not active.empty:
+        lesson = active.iloc[0]["Lektion"] == "Ja"
+    else:
+        lesson = False
+
+
+    # --------------------------------------------------
+    # OCCUPANCY
+    # --------------------------------------------------
+
+    target_occupancy = 25 if lesson else 0
+
+    # Personer kommer in gradvis
+    if occupancy < target_occupancy:
+        occupancy = min(
+            occupancy + 5,
+            target_occupancy
+        )
+
+    # Personer lämnar gradvis
+    elif occupancy > target_occupancy:
+        occupancy = max(
+            occupancy - 5,
+            target_occupancy
+        )
+
+
+    # --------------------------------------------------
+    # CO2
+    # --------------------------------------------------
+
+    outdoor_co2 = 420
+
+    generation = occupancy * 2
+    ventilation = (co2 - outdoor_co2) * 0.05
+
+    co2 += generation - ventilation
+
+    # Hindra CO2 från att gå under utomhusnivån
+    co2 = max(co2, outdoor_co2)
+
+
+    # --------------------------------------------------
+    # SKICKA OCCUPANCY TILL SIMULATORN
+    # --------------------------------------------------
+
+    occupancy_payload = {
         "data_type": "text",
-        "value": str(round(curco2, 2))
+        "value": str(occupancy)
     }
 
-    response = requests.put(
-        f"{BASE}api/sensors/{room}-co2/value",
-        json=payload,
+    occupancy_response = requests.put(
+        f"{BASE}api/sensors/{room}-occupancy/value",
+        json=occupancy_payload,
         headers=headers
     )
 
-    print("Updated CO2:", response.status_code, response.text)
-    print("CO2:", curco2)
 
-    return curco2
+    # --------------------------------------------------
+    # SKICKA CO2 TILL SIMULATORN
+    # --------------------------------------------------
 
-payload = {
-    "data_type": "text",
-    "value": str(co2)
-}
+    co2_payload = {
+        "data_type": "text",
+        "value": str(round(co2, 2))
+    }
 
-# Uppdaterar CO2-sensorns värde
-response = requests.put(
-    f"{BASE}api/sensors/{room}-co2/value",
-    json=payload,
-    headers=headers
-)
+    co2_response = requests.put(
+        f"{BASE}api/sensors/{room}-co2/value",
+        json=co2_payload,
+        headers=headers
+    )
 
-print("Updated CO2:", response.status_code, response.text)
 
-co2 = step(BASE, co2, 100, 60, occupancy)
+    # --------------------------------------------------
+    # PRINTA VAD SOM HÄNDER
+    # --------------------------------------------------
+
+    print(
+        simulation_time.time(),
+        "| Lesson:", lesson,
+        "| Occupancy:", occupancy,
+        "| CO2:", round(co2),
+        "| Occ status:", occupancy_response.status_code,
+        "| CO2 status:", co2_response.status_code
+    )
+
+
+    # --------------------------------------------------
+    # GÅ FRAM 5 SIMULERADE MINUTER
+    # --------------------------------------------------
+
+    simulation_time += pd.Timedelta(minutes=5)
+
+
+    # 1 riktig sekund = 5 simulerade minuter
+    time.sleep(1)
