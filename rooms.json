@@ -1,9 +1,29 @@
 {
     "rooms": [
         {
-            "name": "A110"
+            "name": "A10"
             "floor": 0,
             "walls": 2
+        },
+        {
+            "name": "A12",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A102",
+            "floor": 0,
+            "walls": 9.5
+        },
+        {
+            "name": "A103+A112_B+A103",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A104",
+            "floor": 0,
+            "walls": 10
         },
         {
             "name": "A105"
@@ -236,9 +256,9 @@
             "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A170",
+            "floor": 0,
+            "walls": 0
         },
         {
             "name":
@@ -281,9 +301,9 @@
             "walls":
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A170",
+            "floor": 0,
+            "walls": 0
         },
         {
             "name": "A171C",
@@ -386,39 +406,124 @@
             "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A308",
+            "floor": 0,
+            "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A309",
+            "floor": 0,
+            "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A310",
+            "floor": 0,
+            "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A311",
+            "floor": 0,
+            "walls": 7.2
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A312",
+            "floor": 0,
+            "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A313",
+            "floor": 0,
+            "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
+            "name": "A314",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A315",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A316",
+            "floor": 0,
+            "walls": 10.3
+        },
+        {
+            "name": "A317",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A318",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A319",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A320",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A32",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A322",
+            "floor": 0,
+            "walls": 2
+        },
+        {
+            "name": "A323",
+            "floor": 0,
+            "walls": 7
+        },
+        {
+            "name": "A324",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A325",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A326",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A327",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A328",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A329",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A330",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A33",
+            "floor": 0,
+            "walls": 0
         },
         {
             "name":
