@@ -81,6 +81,11 @@
             "walls": 0
         },
         {
+            "name": "A113C",
+            "floor": 0,
+            "walls": 0
+        },
+        {
             "name": "A114",
             "floor": 0,
             "walls": 0
@@ -152,6 +157,16 @@
         },
         {
             "name": "A125",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A125A",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A125B",
             "floor": 0,
             "walls": 2.3
         },
@@ -368,7 +383,7 @@
         {
             "name": "A171A",
             "floor": 0,
-            "walls": 2
+            "walls": 0
         },
         {
             "name": "A171B",
@@ -379,6 +394,11 @@
             "name": "A171C",
             "floor": 0,
             "walls": 2
+        },
+        {
+            "name": "A172",
+            "floor": 0,
+            "walls": 0
         },
         {
             "name": "A173",
