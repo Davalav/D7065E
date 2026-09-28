@@ -1,7 +1,7 @@
 {
     "rooms": [
         {
-            "name": "A10"
+            "name": "A10",
             "floor": 0,
             "walls": 2
         },
@@ -26,18 +26,18 @@
             "walls": 10
         },
         {
-            "name": "A105"
+            "name": "A105",
             "floor": 0,
             "walls": 2
         },
         {
-            "name": "A106"
-            "floor": 0
+            "name": "A106",
+            "floor": 0,
             "walls": 7
         },
         {
-            "name": "A107"
-            "floor": 0
+            "name": "A107",
+            "floor": 0,
             "walls": 8
         },
         {
@@ -56,7 +56,12 @@
             "walls": 8
         },
         {
-            "name": "A111".
+            "name": "A111",
+            "floor": 0,
+            "walls": 16
+        },
+        {
+            "name": "A112_A",
             "floor": 0,
             "walls": 16
         },
@@ -64,6 +69,61 @@
             "name": "A119",
             "floor": 0,
             "walls": 3.2
+        },
+        {
+            "name": "A120",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A121",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A122",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A123",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A124",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A125",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A126",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A127",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A128",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A129",
+            "floor": 0,
+            "walls": 2.3
+        },
+        {
+            "name": "A130",
+            "floor": 0,
+            "walls": 2.3
         },
         {
             "name": "A13",
@@ -181,37 +241,12 @@
             "walls": 2.3
         },
         {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
             "name": "A16",
             "floor": 0,
             "walls": 2.3
         },
         {
-            "name": "A160"
+            "name": "A160",
             "floor": 0,
             "walls": 8.3
         },
@@ -233,7 +268,7 @@
         {
             "name": "A165",
             "floor": 0,
-            "walls": 2.3,
+            "walls": 2.3
         },
         {
             "name": "A166",
@@ -259,46 +294,6 @@
             "name": "A170",
             "floor": 0,
             "walls": 0
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
         },
         {
             "name": "A170",
@@ -524,36 +519,6 @@
             "name": "A33",
             "floor": 0,
             "walls": 0
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
-        {
-            "name":
-            "floor":
-            "walls":
-        },
+        }
     ]
 }
