@@ -6,8 +6,6 @@ BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
 T_outside = -40
-level = sys.argv[1] if len(sys.argv) >1 else "0"
-room = sys.argv[2] if len(sys.argv) >2 else "A109"
 def format_seconds(seconds: float) -> str:
     """
     Convert a float number of seconds into a human-readable string.
@@ -30,7 +28,7 @@ def format_seconds(seconds: float) -> str:
     #else:
     #    return f"{sign}{abs_seconds / 86400:.3f} days"
 
-def step(BASE, curTemp,volume,deltaT,watt):
+def step(BASE, curTemp,volume,deltaT,watt, room, walls):
     origWatt=watt
     response = requests.get(f'{BASE}api/actuators/{room}-set')
     object = json.loads(response.text)
@@ -40,7 +38,7 @@ def step(BASE, curTemp,volume,deltaT,watt):
     # Värmeförlust: https://home-energy-model.co.uk/technical/fabric-heat-loss/
     # Q=U\cdot A\cdot (T_inside-T_outside)
     U=0.25
-    A= 20
+    A= walls*3
     T_diff= curTemp-T_outside
     wattLoss= U*A*T_diff
     # Ekvation för värmetillförsel:
@@ -56,8 +54,11 @@ def step(BASE, curTemp,volume,deltaT,watt):
     if(curTemp < setTemp):
 
         watt = min(watt,(m*cp*abs(setTemp-curTemp))/deltaT)
-
+        watt=0
         curTemp += (watt*deltaT)/(m*cp)
+        if(walls>0):
+            curTemp=0
+            
         if(origWatt == watt):
             t=(m*cp*(setTemp-curTemp))/(watt-wattLoss)
             print(f"time to equil: {format_seconds(t)}")
@@ -65,33 +66,81 @@ def step(BASE, curTemp,volume,deltaT,watt):
     payload = {"data_type": "text", "value": str(round(curTemp,2))}
     response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
     #print(response.json())
-    print(curTemp)
+    #print(curTemp)
     return curTemp
 
-# Get Area
-response = requests.get(f'{BASE}api/building/floors/level{level}')
-object = json.loads(response.text)
-rooms = object["rooms"]
-a109_area = next((rum for rum in rooms if rum["name"]== room),None)['area']
-#a109_area = rooms[97]['area']
-print(rooms[97])
+if len(sys.argv) > 1 and sys.argv[1] == "Alfa":
+    f = open("rooms.json")
+    roomsJson = json.loads(f.read())
+    #print(roomsJson)
+    levels =[]
+    rooms =[]
+    walls =[]
+    for i in roomsJson["rooms"]:
+        levels.append(i["floor"])
+        rooms.append(i["name"])
+        walls.append(i["walls"])
+else:
+    levels = [sys.argv[1] if len(sys.argv) >1 else "0"]
+    rooms = [sys.argv[2] if len(sys.argv) >2 else "A109"]
+    f = open("rooms.json")
+    roomsJson = json.loads(f.read())
+    walls = []
+    for i in roomsJson["rooms"]:
+        print(i)
+        if i["name"]=="A109":
+            walls = [i["walls"]]
+            print(f"Found A109: {walls}㎡")
+            break
 
-# Get temperature
-response = requests.get(f'{BASE}api/sensors/{room}-temp')
-object = json.loads(response.text)
-print(object["value"])
-temp = float(object["value"])
+print("Json loaded")
+areas = []
+temps = []
+for i in range(len(levels)):
+    level = levels[i]
+    room = rooms[i]
+    # Get Area
+    response = requests.get(f'{BASE}api/building/floors/level{level}')
+    object = json.loads(response.text)
+    ObjRooms = object["rooms"]
+    #print(ObjRooms[0])
+    for rum in ObjRooms:
+        if rum["name"]== room:
+            areas.append(rum["area"])
+            #print("Found")
+            break
+            
+    #room_area = next((rum for rum in ObjRooms if rum["name"]== room),None)['area']
+    #areas.append(room_area)
+    #a109_area = rooms[97]['area']
+    #print(rooms[97])
+    
+    # Get temperature
+    response = requests.get(f'{BASE}api/sensors/{room}-temp')
+    object = json.loads(response.text)
+    #print(object["value"])
+    try:
+        temp = float(object["value"])
+        temps.append(temp)
+    except:
+        print(object)
+        print(room)
+    # Set Hvac running
+    response = requests.get(str(BASE+f'api/equipment/hvac-{room}'))
+    payload = json.loads(response.text)
+    payload["status"] = "running"
+    response = requests.put(str(BASE+f"api/equipment/hvac-{room}"), json=payload, headers=headers)
+    #print(response.json())
 
-# Set Hvac running
-response = requests.get(str(BASE+f'api/equipment/hvac-{room}'))
-payload = json.loads(response.text)
-payload["status"] = "running"
-response = requests.put(str(BASE+f"api/equipment/hvac-{room}"), json=payload, headers=headers)
-print(response.json())
+print("Area loaded. Hvac activated")
 
-for i in range(100):
-    temp = step(BASE, temp, a109_area*3,60*60,500)
+print("starting sim")
+for i in range(len(levels)):
+    for t in range(100):
+        temps[i] = step(BASE, temps[i], areas[i]*3,60*60,500, rooms[i], walls[i])
+    print("Timestep")
     sleep(1)
+        
 
 # Set Hvac stopped    
 payload["sensors"][0]["value"]=str(round(temp,2))

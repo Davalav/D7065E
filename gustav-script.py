@@ -41,6 +41,6 @@ for i in range(len(levels)):
     object = json.loads(response.text)
     #print(object)
     
-    payload = {"data_type": "text", "value": str(round(10,2))}
+    payload = {"data_type": "text", "value": str(round(100,2))}
     response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
 #print(response.json())

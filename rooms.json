@@ -136,11 +136,6 @@
             "walls": 2.3
         },
         {
-            "name": "A121",
-            "floor": 0,
-            "walls": 2.3
-        },
-        {
             "name": "A122",
             "floor": 0,
             "walls": 2.3
@@ -534,11 +529,6 @@
             "name": "A316",
             "floor": 0,
             "walls": 10.3
-        },
-        {
-            "name": "A317",
-            "floor": 0,
-            "walls": 2.3
         },
         {
             "name": "A318",
