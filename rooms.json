@@ -6,11 +6,6 @@
             "walls": 2
         },
         {
-            "name": "A12",
-            "floor": 0,
-            "walls": 0
-        },
-        {
             "name": "A102",
             "floor": 0,
             "walls": 9.5
@@ -63,7 +58,7 @@
         {
             "name": "A112_A",
             "floor": 0,
-            "walls": 16
+            "walls": 0
         },
         {
             "name": "A113",
@@ -128,32 +123,32 @@
         {
             "name": "A119",
             "floor": 0,
-            "walls": 3.2
+            "walls": 0
         },
         {
             "name": "A120",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A122",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A123",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A124",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A125",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A125A",
@@ -163,32 +158,32 @@
         {
             "name": "A125B",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A126",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A127",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A128",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A129",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A130",
             "floor": 0,
-            "walls": 2.3
+            "walls": 0
         },
         {
             "name": "A13",
