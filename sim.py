@@ -56,12 +56,12 @@ def step(BASE, curTemp,volume,deltaT,watt, room, walls):
         watt = min(watt,(m*cp*abs(setTemp-curTemp))/deltaT)
         watt=0
         curTemp += (watt*deltaT)/(m*cp)
-        if(walls>0):
-            curTemp=0
             
         if(origWatt == watt):
             t=(m*cp*(setTemp-curTemp))/(watt-wattLoss)
             print(f"time to equil: {format_seconds(t)}")
+    if(walls>0):
+        curTemp=0
     #temp += 0.2*(setTemp-temp)
     payload = {"data_type": "text", "value": str(round(curTemp,2))}
     response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
@@ -135,8 +135,8 @@ for i in range(len(levels)):
 print("Area loaded. Hvac activated")
 
 print("starting sim")
-for i in range(len(levels)):
-    for t in range(100):
+for t in range(1):
+    for i in range(len(levels)):
         temps[i] = step(BASE, temps[i], areas[i]*3,60*60,500, rooms[i], walls[i])
     print("Timestep")
     sleep(1)
