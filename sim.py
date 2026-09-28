@@ -5,7 +5,7 @@ import sys
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
-T_outside = 0
+T_outside = -40
 level = sys.argv[1] if len(sys.argv) >1 else "0"
 room = sys.argv[2] if len(sys.argv) >2 else "A109"
 def format_seconds(seconds: float) -> str:
@@ -31,11 +31,12 @@ def format_seconds(seconds: float) -> str:
     #    return f"{sign}{abs_seconds / 86400:.3f} days"
 
 def step(BASE, curTemp,volume,deltaT,watt):
+    origWatt=watt
     response = requests.get(f'{BASE}api/actuators/{room}-set')
     object = json.loads(response.text)
     setTemp = float(object["state"])
     #print(setTemp)
-    
+
     # Värmeförlust: https://home-energy-model.co.uk/technical/fabric-heat-loss/
     # Q=U\cdot A\cdot (T_inside-T_outside)
     U=0.25
@@ -48,17 +49,18 @@ def step(BASE, curTemp,volume,deltaT,watt):
     # \Delta T=\frac{Q\cdot t}{m\cdot c}
     cp = 1000
     m = volume*1.225
-    
+
     #Time to equilibrium (Inte helt korrekt då värmeförlusten är logaritmisk)
-    
+
     curTemp -= (wattLoss*deltaT)/(m*cp)
     if(curTemp < setTemp):
-        
+
         watt = min(watt,(m*cp*abs(setTemp-curTemp))/deltaT)
-        
+
         curTemp += (watt*deltaT)/(m*cp)
-    t=(m*cp*(setTemp-curTemp))/(watt-wattLoss)
-    print(f"time to equil: {format_seconds(t)}")
+        if(origWatt == watt):
+            t=(m*cp*(setTemp-curTemp))/(watt-wattLoss)
+            print(f"time to equil: {format_seconds(t)}")
     #temp += 0.2*(setTemp-temp)
     payload = {"data_type": "text", "value": str(round(curTemp,2))}
     response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)

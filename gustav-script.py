@@ -10,7 +10,6 @@ level = sys.argv[1] if len(sys.argv) >1 else "0"
 room = sys.argv[2] if len(sys.argv) >2 else "A109"
 
 
-
 # Skapa en hvac med sensor och actuator i a109
 payload = {"id":f"hvac-{room}","name":f"HVAC {room}","type":"ac_unit","category":"hvac","level":f"level{level}","room":room,"status":"stopped"}
 response = requests.post(str(BASE+"api/equipment"), json=payload, headers=headers)
