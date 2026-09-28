@@ -66,6 +66,61 @@
             "walls": 16
         },
         {
+            "name": "A113",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A113A",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A113B",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A114",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A115",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A115A",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A115B",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A116",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A116A",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A117",
+            "floor": 0,
+            "walls": 0
+        },
+        {
+            "name": "A118",
+            "floor": 0,
+            "walls": 0
+        },
+        {
             "name": "A119",
             "floor": 0,
             "walls": 3.2
@@ -241,6 +296,11 @@
             "walls": 2.3
         },
         {
+            "name": "A154",
+            "floor": 0,
+            "walls": 8
+        },
+        {
             "name": "A16",
             "floor": 0,
             "walls": 2.3
@@ -301,19 +361,24 @@
             "walls": 0
         },
         {
-            "name": "A171C",
-            "floor": 0,
-            "walls": 2
-        },
-        {
             "name": "A17",
             "floor": 0,
             "walls": 0.6
         },
         {
+            "name": "A171A",
+            "floor": 0,
+            "walls": 2
+        },
+        {
             "name": "A171B",
             "floor": 0,
             "walls": 1.6
+        },
+        {
+            "name": "A171C",
+            "floor": 0,
+            "walls": 2
         },
         {
             "name": "A173",
@@ -376,7 +441,12 @@
             "walls": 18
         },
         {
-            "name": "303",
+            "name": "A302",
+            "floor": 0,
+            "walls": 9
+        },
+        {
+            "name": "A303",
             "floor": 0,
             "walls": 9
         },
