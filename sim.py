@@ -5,7 +5,7 @@ import sys
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
-T_outside = -40
+T_outside = 0
 def format_seconds(seconds: float) -> str:
     """
     Convert a float number of seconds into a human-readable string.
@@ -54,7 +54,7 @@ def step(BASE, curTemp,volume,deltaT,watt, room, walls):
     if(curTemp < setTemp):
 
         watt = min(watt,(m*cp*abs(setTemp-curTemp))/deltaT)
-        watt=0
+        #watt=0
         curTemp += (watt*deltaT)/(m*cp)
             
         if(origWatt == watt):
@@ -63,6 +63,7 @@ def step(BASE, curTemp,volume,deltaT,watt, room, walls):
     #if(walls>0):
     #    curTemp=0
     #temp += 0.2*(setTemp-temp)
+    #curTemp=volume/3
     payload = {"data_type": "text", "value": str(round(curTemp,2))}
     response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
     #print(response.json())
@@ -133,17 +134,19 @@ for i in range(len(levels)):
     #print(response.json())
 
 print("Area loaded. Hvac activated")
-
+time = 9*60*60 #Time in seconds
+timestep = 60 #Time in seconds
 print("starting sim")
 for t in range(100):
     for i in range(len(levels)):
-        temps[i] = step(BASE, temps[i], areas[i]*3,60*60,500, rooms[i], walls[i])
-    print("Timestep")
+        temps[i] = step(BASE, temps[i], areas[i]*3,timestep,500, rooms[i], walls[i])
+    time+= timestep
+    print(f"Timestep: {format_seconds(time)}")
     sleep(1)
         
-
-# Set Hvac stopped    
-payload["sensors"][0]["value"]=str(round(temp,2))
-payload["status"] = "stopped"
-response = requests.put(str(BASE+f"api/equipment/hvac-{room}"), json=payload, headers=headers)
+for i in range(len(levels)):
+    # Set Hvac stopped    
+    payload["sensors"][0]["value"]=str(round(temps[i],2))
+    payload["status"] = "stopped"
+    response = requests.put(str(BASE+f"api/equipment/hvac-{rooms[i]}"), json=payload, headers=headers)
 print(response.json())

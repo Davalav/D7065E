@@ -123,12 +123,17 @@
         {
             "name": "A119",
             "floor": 0,
-            "walls": 0
+            "walls": 3.2
         },
         {
             "name": "A120",
             "floor": 0,
             "walls": 0
+        },
+        {
+            "name": "A12",
+            "floor": 0,
+            "walls": 22
         },
         {
             "name": "A122",
@@ -358,12 +363,7 @@
         {
             "name": "A170",
             "floor": 0,
-            "walls": 0
-        },
-        {
-            "name": "A170",
-            "floor": 0,
-            "walls": 0
+            "walls": 5.3
         },
         {
             "name": "A17",
@@ -453,7 +453,7 @@
         {
             "name": "A302",
             "floor": 0,
-            "walls": 9
+            "walls": 0
         },
         {
             "name": "A303",
