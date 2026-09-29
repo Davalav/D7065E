@@ -39,5 +39,12 @@ query = 'SELECT sqlite_version();'
 c.execute(query)
 
 
-#for i in range(len(levels)):
+for i in range(len(levels)):
+    level = levels[i]
+    room = rooms[i]
+    response = requests.get(str(BASE+f'api/equipment/temp-{room}'))
+    object = json.loads(response.text)
+    #print(object["sensors"])
+    print(object)
+
     
