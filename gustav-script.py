@@ -109,7 +109,7 @@ for i in range(len(levels)):
     #response = requests.post(str(BASE+"api/equipment"), json=payload, headers=headers)
 print(f"Added equipment and for {len(levels)} rooms with {fails} fails")
 fails=0
-time.sleep(10)
+time.sleep(1)
 
 for i in range(len(levels)):
     level = levels[i]

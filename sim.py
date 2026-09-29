@@ -5,7 +5,7 @@ import sys
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
-T_outside = 0
+T_outside = -40
 def format_seconds(seconds: float) -> str:
     """
     Convert a float number of seconds into a human-readable string.
@@ -139,7 +139,7 @@ for i in range(len(levels)):
 
 print("Area loaded. Hvac activated")
 time = 9*60*60 #Time in seconds
-timestep = 60 #Time in seconds
+timestep = 60*60 #Time in seconds
 print("starting sim")
 for t in range(100):
     for i in range(len(levels)):
