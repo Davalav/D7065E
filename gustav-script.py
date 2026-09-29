@@ -75,12 +75,13 @@ sensors = [
         }
     )
 ]
-
+fails=0
 for i in range(len(levels)):
     level = levels[i]
     room = rooms[i]
     # Skapa en hvac med sensor och actuator i a109
     for equip in equipment:
+        equip = equip.copy()
         equip["id"] = equip["id"] + room
         equip["name"] = equip["name"]+ room
         equip["level"] = "level"+str(level)
@@ -95,8 +96,8 @@ for i in range(len(levels)):
             print(i)
             print(response)
             print(dic_response)
-
-            print(type(response))
+            fails += 1
+            #print(type(response))
 
     
     #payload = {"id":f"hvac-{room}","name":f"HVAC {room}","type":"ac_unit","category":"hvac","level":f"level{level}","room":room,"status":"stopped"}
@@ -106,13 +107,15 @@ for i in range(len(levels)):
     
     #payload = {"id":f"hvac-{room}","name":f"HVAC {room}","type":"ac_unit","category":"hvac","level":f"level{level}","room":room,"status":"stopped"}
     #response = requests.post(str(BASE+"api/equipment"), json=payload, headers=headers)
-print("Lagt till equipment")
-    #time.sleep(5)
-print("Lägger till sensorer")
+print(f"Added equipment and for {len(levels)} rooms with {fails} fails")
+fails=0
+time.sleep(10)
 
 for i in range(len(levels)):
+    level = levels[i]
+    room = rooms[i]
     for sensor in sensors:
-        payload = sensor[1]
+        payload = sensor[1].copy()
         payload["id"] = room+ payload["id"]
         response = requests.post(str(BASE+f"api/equipment/{sensor[0]}-{room}/sensors"), json=payload, headers=headers)
         dic_response = json.loads(response.text)
@@ -122,7 +125,8 @@ for i in range(len(levels)):
         if "error" in dic_response:
             print(payload)
             print(dic_response)
-            print(type(response))
+            fails += 1
+            #print(type(response))
 
 
     
@@ -140,6 +144,6 @@ for i in range(len(levels)):
     
     #payload = {"data_type": "text", "value": str(round(cur_temp,2))}
     #response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
-    
-print(f"Added equipment and sensors for {len(levels)} rooms")
+print(f"Added sensors for {len(levels)} rooms with {fails} fails")
+
 #print(response.json())
