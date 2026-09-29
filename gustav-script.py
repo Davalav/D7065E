@@ -99,7 +99,8 @@ for i in range(len(levels)):
             fails += 1
             #print(type(response))
 
-    
+    payload = {"id":f"{room}-set","name":"Setpoint","type":"setpoint","state":f"{set_temp}"}
+    response = requests.post(str(BASE+f"api/equipment/hvac-{room}/actuators"), json=payload, headers=headers)
     #payload = {"id":f"hvac-{room}","name":f"HVAC {room}","type":"ac_unit","category":"hvac","level":f"level{level}","room":room,"status":"stopped"}
     #response = requests.post(str(BASE+"api/equipment"), json=payload, headers=headers)
     #print(response.json())
@@ -134,8 +135,7 @@ for i in range(len(levels)):
     #payload = {"id":f"{room}-temp","name":"Temperature","type":"temperature","data_type":"text","unit":"°C","value":str(set_temp)}
     #response = requests.post(str(BASE+f"api/equipment/hvac-{room}/sensors"), json=payload, headers=headers)
     #print(response.json())
-    #payload = {"id":f"{room}-set","name":"Setpoint","type":"setpoint","state":f"{set_temp}"}
-    #response = requests.post(str(BASE+f"api/equipment/hvac-{room}/actuators"), json=payload, headers=headers)
+
     #print(response.json())
     
     #response = requests.get(str(BASE+f'api/equipment/hvac-{room}'))

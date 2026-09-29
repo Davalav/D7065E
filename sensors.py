@@ -2,7 +2,7 @@ import requests
 import json
 import sys
 import sqlite3
-
+import time
 # sqlit för att öppna databasen
 # exempel:
 # sqlit connect sqlite --file-path "data.db"
@@ -31,6 +31,7 @@ table_creation_query = """
     CREATE TABLE IF NOT EXISTS Rooms (
         Name VARCHAR(20) NOT NULL,
         Floor INT NOT NULL,
+        Timestamp INT,
         Temperature FLOAT,
         CO2 FLOAT,
         PRIMARY KEY (Name, Floor)
@@ -42,10 +43,21 @@ query = 'SELECT sqlite_version();'
 c.execute(query)
 
 room_creation_query = """
-INSERT INTO Rooms(Name, Floor, Temperature, CO2)
-Values(?, ?, ?, ?);
+INSERT INTO Rooms(Name, Floor, Timestamp, Temperature, CO2)
+Values(?, ?, ?, ?, ?);
 """
-#ON CONFLICT (Name, Floor);
+
+room_creation_query = """
+INSERT INTO Rooms(Name, Floor, Timestamp, Temperature, CO2)
+Values(?, ?, ?, ?, ?)
+ON CONFLICT (Name, Floor) DO
+UPDATE
+SET
+    Temperature = excluded.Temperature,
+    CO2 = excluded.CO2
+WHERE
+    excluded.Timestamp > Rooms.Timestamp
+"""
 
 for i in range(len(levels)):
     level = levels[i]
@@ -62,12 +74,9 @@ for i in range(len(levels)):
     
     #print(room_creation_query)
     try:
-        c.execute(room_creation_query, (room, level, temp, co2))
+        c.execute(room_creation_query, (room, level, time.time(), temp, co2))
     except Exception as e:
         print(e)
-        print(f"{room} {level} {temp} {co2}")
+        print(f"{room} {level} {time.time()} {temp} {co2}")
     conn.commit()
 c.close()
-
-
-    

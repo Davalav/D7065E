@@ -32,6 +32,8 @@ def step(BASE, curTemp,volume,deltaT,watt, room, walls):
     origWatt=watt
     response = requests.get(f'{BASE}api/actuators/{room}-set')
     object = json.loads(response.text)
+    #print(object)
+    #print(room)
     setTemp = float(object["state"])
     #print(setTemp)
 
