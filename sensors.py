@@ -45,6 +45,7 @@ room_creation_query = """
 INSERT INTO Rooms(Name, Floor, Temperature, CO2)
 Values(?, ?, ?, ?);
 """
+#ON CONFLICT (Name, Floor);
 
 for i in range(len(levels)):
     level = levels[i]
@@ -62,8 +63,9 @@ for i in range(len(levels)):
     #print(room_creation_query)
     try:
         c.execute(room_creation_query, (room, level, temp, co2))
-    except Error as e:
+    except Exception as e:
         print(e)
+        print(f"{room} {level} {temp} {co2}")
     conn.commit()
 c.close()
 
