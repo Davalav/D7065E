@@ -1,0 +1,36 @@
+{
+    "weather": [
+        {
+            "Time": "00:00:00",
+            "Temperature": 11
+        },
+        {
+            "Time": "03:00:00",
+            "Temperature": 11
+        },
+        {
+            "Time": "06:00:00",
+            "Temperature": 10
+        },
+        {
+            "Time": "09:00:00",
+            "Temperature": 10
+        },
+        {
+            "Time": "12:00:00",
+            "Temperature": 10
+        },
+        {
+            "Time": "15:00:00",
+            "Temperature": 11
+        },
+        {
+            "Time": "18:00:00",
+            "Temperature": 11
+        },
+        {
+            "Time": "21:00:00",
+            "Temperature": 9
+        }
+    ]
+}
