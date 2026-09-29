@@ -33,6 +33,7 @@ table_creation_query = """
         Floor INT NOT NULL,
         Timestamp INT,
         Temperature FLOAT,
+        Set_Temperature FLOAT,
         CO2 FLOAT,
         PRIMARY KEY (Name, Floor)
     );
@@ -48,13 +49,14 @@ Values(?, ?, ?, ?, ?);
 """
 
 room_creation_query = """
-INSERT INTO Rooms(Name, Floor, Timestamp, Temperature, CO2)
-Values(?, ?, ?, ?, ?)
+INSERT INTO Rooms(Name, Floor, Timestamp, Temperature, Set_Temperature, CO2)
+Values(?, ?, ?, ?, ?, ?)
 ON CONFLICT (Name, Floor) DO
 UPDATE
 SET
     Temperature = excluded.Temperature,
-    CO2 = excluded.CO2
+    CO2 = excluded.CO2,
+    Set_Temperature = excluded.Set_Temperature
 WHERE
     excluded.Timestamp > Rooms.Timestamp
 """
@@ -72,11 +74,15 @@ for i in range(len(levels)):
     co2=dic_response["value"]
     #print(dic_response)
     
+    response = requests.get(f'{BASE}api/actuators/{room}-set')
+    dic_response = json.loads(response.text)
+    setTemp = float(dic_response["state"])
+    
     #print(room_creation_query)
     try:
-        c.execute(room_creation_query, (room, level, time.time(), temp, co2))
+        c.execute(room_creation_query, (room, level, time.time(), temp, setTemp, co2))
     except Exception as e:
         print(e)
-        print(f"{room} {level} {time.time()} {temp} {co2}")
+        print(f"{room} {level} {time.time()} {temp} {setTemp} {co2}")
     conn.commit()
 c.close()
