@@ -97,13 +97,17 @@ else:
 print("Json loaded")
 areas = []
 temps = []
+level_data= {}
 for i in range(len(levels)):
     level = levels[i]
     room = rooms[i]
     # Get Area
-    response = requests.get(f'{BASE}api/building/floors/level{level}')
-    object = json.loads(response.text)
-    ObjRooms = object["rooms"]
+    if level not in level_data:
+        response = requests.get(f'{BASE}api/building/floors/level{level}')
+        object = json.loads(response.text)
+        ObjRooms = object["rooms"]
+        level_data[level] = ObjRooms
+    
     #print(ObjRooms[0])
     for rum in ObjRooms:
         if rum["name"]== room:
