@@ -3,6 +3,10 @@ import json
 import sys
 import sqlite3
 
+# sqlit för att öppna databasen
+# exempel:
+# sqlit connect sqlite --file-path "data.db"
+
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
