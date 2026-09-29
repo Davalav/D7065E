@@ -41,6 +41,10 @@ c.execute(table_creation_query)
 query = 'SELECT sqlite_version();'
 c.execute(query)
 
+room_creation_query = """
+INSERT INTO Rooms(Name, Floor, Temperature, CO2)
+Values(?, ?, ?, ?);
+"""
 
 for i in range(len(levels)):
     level = levels[i]
@@ -48,17 +52,20 @@ for i in range(len(levels)):
     response = requests.get(str(BASE+f'api/sensors/{room}-temp'))
     dic_response = json.loads(response.text)
     temp = dic_response["value"]
-    print(dic_response)
+    #print(dic_response)
     
     response = requests.get(str(BASE+f'api/sensors/{room}-co2'))
     dic_response = json.loads(response.text)
     co2=dic_response["value"]
-    print(dic_response)
+    #print(dic_response)
     
-    room_creation_query = f"""
-    INSERT INTO Rooms(Name, Floor, Temperature, Co2)
-    Values({room}, {level}, {temp}, {co2})
-    """
+    #print(room_creation_query)
+    try:
+        c.execute(room_creation_query, (room, level, temp, co2))
+    except Error as e:
+        print(e)
+    conn.commit()
+c.close()
 
 
     
