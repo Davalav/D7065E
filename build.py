@@ -23,7 +23,7 @@ else:
 
 set_temp= 21
 cur_temp = 25
-cur_co2=100
+cur_co2=420
 equipment= [
     {
         "id": "hvac-",

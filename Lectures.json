@@ -1,72 +1,236 @@
 {
-    "sessions": [
-        {
-            "Session": 1,
-            "StartTime": "08:15:00",
-            "EndTime": "09:45:00"
-        },
-        {
-            "Session": 2,
-            "StartTime": "10:15:00",
-            "EndTime": "11:45:00"
-        },
-        {
-            "Session": 3,
-            "StartTime": "13:00:00",
-            "EndTime": "14:30:00"
-        },
-        {
-            "Session": 4,
-            "StartTime": "14:45:00",
-            "EndTime": "16:15:00"
-        },
-        {
-            "Session": 5,
-            "StartTime": "16:30:00",
-            "EndTime": "18:00:00"
-        }
-    ],
+  "sessions": [
+    {
+      "Session": 1,
+      "StartTime": "08:15:00",
+      "EndTime": "09:45:00"
+    },
+    {
+      "Session": 2,
+      "StartTime": "10:15:00",
+      "EndTime": "11:45:00"
+    },
+    {
+      "Session": 3,
+      "StartTime": "13:00:00",
+      "EndTime": "14:30:00"
+    },
+    {
+      "Session": 4,
+      "StartTime": "14:45:00",
+      "EndTime": "16:15:00"
+    },
+    {
+      "Session": 5,
+      "StartTime": "16:30:00",
+      "EndTime": "18:00:00"
+    }
+  ],
 
-    "schedule": [
-        {
-            "Day": "Monday",
-            "Classroom": "A109",
-            "Session": 1,
-            "Start": "08:15:00",
-            "End": "09:45:00",
-            "Lecture": true
-        },
-        {
-            "Day": "Monday",
-            "Classroom": "A109",
-            "Session": 2,
-            "Start": "10:15:00",
-            "End": "11:45:00",
-            "Lecture": false
-        },
-        {
-            "Day": "Monday",
-            "Classroom": "A109",
-            "Session": 3,
-            "Start": "13:00:00",
-            "End": "14:30:00",
-            "Lecture": true
-        },
-        {
-            "Day": "Monday",
-            "Classroom": "A109",
-            "Session": 4,
-            "Start": "14:45:00",
-            "End": "16:15:00",
-            "Lecture": false
-        },
-        {
-            "Day": "Monday",
-            "Classroom": "A109",
-            "Session": 5,
-            "Start": "16:30:00",
-            "End": "18:00:00",
-            "Lecture": false
-        }
-    ]
+  "schedule": [
+    {
+      "Day": "Monday",
+      "Classroom": "A109",
+      "Session": 1,
+      "Start": "08:15:00",
+      "End": "09:45:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A109",
+      "Session": 2,
+      "Start": "10:15:00",
+      "End": "11:45:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A109",
+      "Session": 3,
+      "Start": "13:00:00",
+      "End": "14:30:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A109",
+      "Session": 4,
+      "Start": "14:45:00",
+      "End": "16:15:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A109",
+      "Session": 5,
+      "Start": "16:30:00",
+      "End": "18:00:00",
+      "Lecture": false
+    },
+
+    {
+      "Day": "Tuesday",
+      "Classroom": "A109",
+      "Session": 1,
+      "Start": "08:15:00",
+      "End": "09:45:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A109",
+      "Session": 2,
+      "Start": "10:15:00",
+      "End": "11:45:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A109",
+      "Session": 3,
+      "Start": "13:00:00",
+      "End": "14:30:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A109",
+      "Session": 4,
+      "Start": "14:45:00",
+      "End": "16:15:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A109",
+      "Session": 5,
+      "Start": "16:30:00",
+      "End": "18:00:00",
+      "Lecture": false
+    },
+
+    {
+      "Day": "Wednesday",
+      "Classroom": "A109",
+      "Session": 1,
+      "Start": "08:15:00",
+      "End": "09:45:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A109",
+      "Session": 2,
+      "Start": "10:15:00",
+      "End": "11:45:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A109",
+      "Session": 3,
+      "Start": "13:00:00",
+      "End": "14:30:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A109",
+      "Session": 4,
+      "Start": "14:45:00",
+      "End": "16:15:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A109",
+      "Session": 5,
+      "Start": "16:30:00",
+      "End": "18:00:00",
+      "Lecture": false
+    },
+
+    {
+      "Day": "Thursday",
+      "Classroom": "A109",
+      "Session": 1,
+      "Start": "08:15:00",
+      "End": "09:45:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A109",
+      "Session": 2,
+      "Start": "10:15:00",
+      "End": "11:45:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A109",
+      "Session": 3,
+      "Start": "13:00:00",
+      "End": "14:30:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A109",
+      "Session": 4,
+      "Start": "14:45:00",
+      "End": "16:15:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A109",
+      "Session": 5,
+      "Start": "16:30:00",
+      "End": "18:00:00",
+      "Lecture": false
+    },
+
+    {
+      "Day": "Friday",
+      "Classroom": "A109",
+      "Session": 1,
+      "Start": "08:15:00",
+      "End": "09:45:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A109",
+      "Session": 2,
+      "Start": "10:15:00",
+      "End": "11:45:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A109",
+      "Session": 3,
+      "Start": "13:00:00",
+      "End": "14:30:00",
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A109",
+      "Session": 4,
+      "Start": "14:45:00",
+      "End": "16:15:00",
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A109",
+      "Session": 5,
+      "Start": "16:30:00",
+      "End": "18:00:00",
+      "Lecture": false
+    }
+  ]
 }
