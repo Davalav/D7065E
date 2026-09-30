@@ -2,6 +2,8 @@ import requests
 import json
 from time import sleep
 import sys
+import pandas as pd
+
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
@@ -59,9 +61,14 @@ def step(BASE, curTemp,volume,deltaT,watt, room, walls):
         #watt=0
         curTemp += (watt*deltaT)/(m*cp)
             
-        if(origWatt == watt):
-            t=(m*cp*(setTemp-curTemp))/(watt-wattLoss)
-            print(f"time to equil: {format_seconds(t)}")
+        if origWatt == watt:
+            net_power = watt - wattLoss
+
+            if net_power > 0:
+                t = (m * cp * (setTemp - curTemp)) / net_power
+                print(f"time to equil: {format_seconds(t)}")
+            else:
+                print("Setpoint cannot be reached with current HVAC power")
     #if(walls>0):
     #    curTemp=0
     #temp += 0.2*(setTemp-temp)
@@ -140,19 +147,40 @@ for i in range(len(levels)):
     #print(response.json())
 
 print("Area loaded. Hvac activated")
-time = 9*60*60 #Time in seconds
-timestep = 60*60 #Time in seconds
-print("starting sim")
-for t in range(100):
+#time = 9*60*60 #Time in seconds
+#timestep = 60*60 #Time in seconds
+
+simulation_time = pd.Timestamp("2026-09-21 08:00")
+end_time = pd.Timestamp("2026-09-21 18:00")
+
+timestep = pd.Timedelta(minutes=15)
+
+print("Starting simulation")
+
+while simulation_time <= end_time:
+
+    print(
+        "Day:", simulation_time.day_name(),
+        "| Time:", simulation_time.strftime("%H:%M")
+    )
+
     for i in range(len(levels)):
-        temps[i] = step(BASE, temps[i], areas[i]*3,timestep,500, rooms[i], walls[i])
-    time+= timestep
-    print(f"Timestep: {format_seconds(time)}")
+        temps[i] = step(
+            BASE,
+            temps[i],
+            areas[i] * 3,
+            timestep.total_seconds(),
+            500,
+            rooms[i],
+            walls[i]
+        )
+
+    simulation_time += timestep
+
     sleep(1)
         
 for i in range(len(levels)):
     # Set Hvac stopped    
-    payload["sensors"][0]["value"]=str(round(temps[i],2))
     payload["status"] = "stopped"
     response = requests.put(str(BASE+f"api/equipment/hvac-{rooms[i]}"), json=payload, headers=headers)
 print(response.json())
