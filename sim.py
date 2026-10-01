@@ -8,6 +8,24 @@ BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
 T_outside = -40
+
+# Read Lecture Schema and Weather
+with open("JSON files/Lectures.json", "r", encoding="utf-8") as f:
+    lecture_data = json.load(f)
+
+with open("JSON files/Weather.json", "r", encoding="utf-8") as f:
+    weather_data = json.load(f)
+
+schedule = lecture_data["schedule"]
+weather = weather_data["weather"]
+
+print("Schedule loaded:")
+print(schedule[:3])
+
+print("\nWeather loaded:")
+print(weather[:3])
+# -------------------------------
+
 def format_seconds(seconds: float) -> str:
     """
     Convert a float number of seconds into a human-readable string.

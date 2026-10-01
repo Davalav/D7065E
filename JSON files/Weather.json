@@ -3,17 +3,17 @@
     {
       "Day": "Monday",
       "Time": "00:00:00",
-      "Temperature": 11
+      "Temperature": 7
     },
     {
       "Day": "Monday",
       "Time": "03:00:00",
-      "Temperature": 11
+      "Temperature": 7
     },
     {
       "Day": "Monday",
       "Time": "06:00:00",
-      "Temperature": 10
+      "Temperature": 9
     },
     {
       "Day": "Monday",
@@ -23,112 +23,112 @@
     {
       "Day": "Monday",
       "Time": "12:00:00",
-      "Temperature": 10
-    },
-    {
-      "Day": "Monday",
-      "Time": "15:00:00",
-      "Temperature": 11
-    },
-    {
-      "Day": "Monday",
-      "Time": "18:00:00",
-      "Temperature": 11
-    },
-    {
-      "Day": "Monday",
-      "Time": "21:00:00",
-      "Temperature": 9
-    },
-
-    {
-      "Day": "Tuesday",
-      "Time": "00:00:00",
-      "Temperature": 9
-    },
-    {
-      "Day": "Tuesday",
-      "Time": "03:00:00",
-      "Temperature": 8
-    },
-    {
-      "Day": "Tuesday",
-      "Time": "06:00:00",
-      "Temperature": 8
-    },
-    {
-      "Day": "Tuesday",
-      "Time": "09:00:00",
-      "Temperature": 9
-    },
-    {
-      "Day": "Tuesday",
-      "Time": "12:00:00",
-      "Temperature": 11
-    },
-    {
-      "Day": "Tuesday",
-      "Time": "15:00:00",
       "Temperature": 12
     },
     {
-      "Day": "Tuesday",
+      "Day": "Monday",
+      "Time": "15:00:00",
+      "Temperature": 13
+    },
+    {
+      "Day": "Monday",
       "Time": "18:00:00",
+      "Temperature": 11
+    },
+    {
+      "Day": "Monday",
+      "Time": "21:00:00",
+      "Temperature": 9
+    },
+
+    {
+      "Day": "Tuesday",
+      "Time": "00:00:00",
+      "Temperature": 5
+    },
+    {
+      "Day": "Tuesday",
+      "Time": "03:00:00",
+      "Temperature": 5
+    },
+    {
+      "Day": "Tuesday",
+      "Time": "06:00:00",
+      "Temperature": 8
+    },
+    {
+      "Day": "Tuesday",
+      "Time": "09:00:00",
+      "Temperature": 9
+    },
+    {
+      "Day": "Tuesday",
+      "Time": "12:00:00",
+      "Temperature": 11
+    },
+    {
+      "Day": "Tuesday",
+      "Time": "15:00:00",
       "Temperature": 10
     },
     {
       "Day": "Tuesday",
-      "Time": "21:00:00",
+      "Time": "18:00:00",
       "Temperature": 8
+    },
+    {
+      "Day": "Tuesday",
+      "Time": "21:00:00",
+      "Temperature": 5
     },
 
     {
       "Day": "Wednesday",
       "Time": "00:00:00",
-      "Temperature": 7
+      "Temperature": 3
     },
     {
       "Day": "Wednesday",
       "Time": "03:00:00",
-      "Temperature": 7
+      "Temperature": 4
     },
     {
       "Day": "Wednesday",
       "Time": "06:00:00",
+      "Temperature": 5
+    },
+    {
+      "Day": "Wednesday",
+      "Time": "09:00:00",
+      "Temperature": 8
+    },
+    {
+      "Day": "Wednesday",
+      "Time": "12:00:00",
+      "Temperature": 9
+    },
+    {
+      "Day": "Wednesday",
+      "Time": "15:00:00",
+      "Temperature": 9
+    },
+    {
+      "Day": "Wednesday",
+      "Time": "18:00:00",
+      "Temperature": 7
+    },
+    {
+      "Day": "Wednesday",
+      "Time": "21:00:00",
+      "Temperature": 6
+    },
+
+    {
+      "Day": "Thursday",
+      "Time": "00:00:00",
       "Temperature": 6
     },
     {
-      "Day": "Wednesday",
-      "Time": "09:00:00",
-      "Temperature": 8
-    },
-    {
-      "Day": "Wednesday",
-      "Time": "12:00:00",
-      "Temperature": 10
-    },
-    {
-      "Day": "Wednesday",
-      "Time": "15:00:00",
-      "Temperature": 11
-    },
-    {
-      "Day": "Wednesday",
-      "Time": "18:00:00",
-      "Temperature": 9
-    },
-    {
-      "Day": "Wednesday",
-      "Time": "21:00:00",
-      "Temperature": 7
-    },
-
-    {
-      "Day": "Thursday",
-      "Time": "00:00:00",
-      "Temperature": 8
-    },
-    {
       "Day": "Thursday",
       "Time": "03:00:00",
       "Temperature": 8
@@ -136,73 +136,73 @@
     {
       "Day": "Thursday",
       "Time": "06:00:00",
-      "Temperature": 7
+      "Temperature": 9
     },
     {
       "Day": "Thursday",
       "Time": "09:00:00",
-      "Temperature": 9
-    },
-    {
-      "Day": "Thursday",
-      "Time": "12:00:00",
-      "Temperature": 12
-    },
-    {
-      "Day": "Thursday",
-      "Time": "15:00:00",
-      "Temperature": 13
-    },
-    {
-      "Day": "Thursday",
-      "Time": "18:00:00",
-      "Temperature": 11
-    },
-    {
-      "Day": "Thursday",
-      "Time": "21:00:00",
-      "Temperature": 9
-    },
-
-    {
-      "Day": "Friday",
-      "Time": "00:00:00",
       "Temperature": 10
     },
     {
-      "Day": "Friday",
-      "Time": "03:00:00",
-      "Temperature": 9
-    },
-    {
-      "Day": "Friday",
-      "Time": "06:00:00",
-      "Temperature": 9
-    },
-    {
-      "Day": "Friday",
-      "Time": "09:00:00",
-      "Temperature": 11
-    },
-    {
-      "Day": "Friday",
+      "Day": "Thursday",
       "Time": "12:00:00",
-      "Temperature": 13
-    },
-    {
-      "Day": "Friday",
-      "Time": "15:00:00",
       "Temperature": 14
     },
     {
-      "Day": "Friday",
+      "Day": "Thursday",
+      "Time": "15:00:00",
+      "Temperature": 15
+    },
+    {
+      "Day": "Thursday",
       "Time": "18:00:00",
+      "Temperature": 13
+    },
+    {
+      "Day": "Thursday",
+      "Time": "21:00:00",
+      "Temperature": 10
+    },
+
+    {
+      "Day": "Friday",
+      "Time": "00:00:00",
+      "Temperature": 7
+    },
+    {
+      "Day": "Friday",
+      "Time": "03:00:00",
+      "Temperature": 6
+    },
+    {
+      "Day": "Friday",
+      "Time": "06:00:00",
+      "Temperature": 8
+    },
+    {
+      "Day": "Friday",
+      "Time": "09:00:00",
+      "Temperature": 10
+    },
+    {
+      "Day": "Friday",
+      "Time": "12:00:00",
       "Temperature": 12
     },
     {
       "Day": "Friday",
+      "Time": "15:00:00",
+      "Temperature": 11
+    },
+    {
+      "Day": "Friday",
+      "Time": "18:00:00",
+      "Temperature": 9
+    },
+    {
+      "Day": "Friday",
       "Time": "21:00:00",
-      "Temperature": 10
+      "Temperature": 7
     }
   ]
 }
