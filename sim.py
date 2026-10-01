@@ -7,7 +7,7 @@ import pandas as pd
 BASE="http://127.0.0.1:9090/"
 
 headers = {'Content-Type': 'application/json'}
-T_outside = -40
+#T_outside = -40
 
 # Read Lecture Schema and Weather
 with open("JSON files/Lectures.json", "r", encoding="utf-8") as f:
@@ -48,7 +48,7 @@ def format_seconds(seconds: float) -> str:
     #else:
     #    return f"{sign}{abs_seconds / 86400:.3f} days"
 
-def step(BASE, curTemp,volume,deltaT,watt, room, walls):
+def step(BASE, curTemp,volume,deltaT,watt, room, walls, outside_temperature):
     origWatt=watt
     response = requests.get(f'{BASE}api/actuators/{room}-set')
     object = json.loads(response.text)
@@ -61,7 +61,7 @@ def step(BASE, curTemp,volume,deltaT,watt, room, walls):
     # Q=U\cdot A\cdot (T_inside-T_outside)
     U=0.25
     A= walls*3
-    T_diff= curTemp-T_outside
+    T_diff= curTemp-outside_temperature
     wattLoss= U*A*T_diff
     # Ekvation för värmetillförsel:
     # Q=\frac{m\cdot c\cdot \Delta T}{t}
@@ -176,10 +176,34 @@ timestep = pd.Timedelta(minutes=15)
 print("Starting simulation")
 
 while simulation_time <= end_time:
+    current_day = simulation_time.day_name()
+    current_time = simulation_time.strftime("%H:%M:%S") 
+
+    weather_today = [
+        row for row in weather
+        if row["Day"] == current_day
+    ]
+
+    current_weather = None
+
+    for row in weather_today:
+        if row["Time"] <= current_time:
+            current_weather = row
+        else:
+            break    
+
+    if current_weather is None and weather_today:
+        current_weather = weather_today[0]
+
+    if current_weather:
+        outside_temperature = current_weather["Temperature"]
+    else:
+        outside_temperature = 0
 
     print(
         "Day:", simulation_time.day_name(),
-        "| Time:", simulation_time.strftime("%H:%M")
+        "| Time:", simulation_time.strftime("%H:%M"),
+        "| Outside temp:", outside_temperature, "°C"
     )
 
     for i in range(len(levels)):
@@ -190,7 +214,8 @@ while simulation_time <= end_time:
             timestep.total_seconds(),
             500,
             rooms[i],
-            walls[i]
+            walls[i],
+            outside_temperature
         )
 
     simulation_time += timestep
