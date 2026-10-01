@@ -10,7 +10,6 @@ headers = {
     "Content-Type": "application/json"
 }
 
-
 # --------------------------------------------------
 # LÄS JSON
 # --------------------------------------------------
@@ -31,51 +30,6 @@ print("\nWeather loaded:")
 print(weather[:3])
 
 # --------------------------------------------------
-# SKAPA WEATHER EQUIPMENT
-# --------------------------------------------------
-
-weather_equipment = {
-    "id": "weather-outside",
-    "name": "Outside Weather",
-    "type": "weather",
-    "category": "monitoring",
-    "level": "outside",
-    "room": "outside",
-    "status": "running"
-}
-
-response = requests.post(
-    f"{BASE}api/equipment",
-    json=weather_equipment,
-    headers=headers
-)
-
-print("Weather equipment:", response.status_code, response.text)
-
-
-# --------------------------------------------------
-# SKAPA TEMPERATURSENSOR FÖR UTOMHUSTEMPERATUR
-# --------------------------------------------------
-
-weather_sensor = {
-    "id": "outside-temperature",
-    "name": "Outside Temperature",
-    "type": "temperature",
-    "data_type": "text",
-    "unit": "C",
-    "value": "0"
-}
-
-response = requests.post(
-    f"{BASE}api/equipment/weather-outside/sensors",
-    json=weather_sensor,
-    headers=headers
-)
-
-print("Weather sensor:", response.status_code, response.text)
-
-
-# --------------------------------------------------
 # STARTVÄRDEN FÖR SIMULATION
 # --------------------------------------------------
 
@@ -87,7 +41,6 @@ co2 = 420
 
 timestep = pd.Timedelta(minutes=5)
 
-
 # --------------------------------------------------
 # SIMULATION
 # --------------------------------------------------
@@ -96,7 +49,6 @@ while simulation_time <= end_time:
 
     current_day = simulation_time.day_name()
     current_time = simulation_time.strftime("%H:%M:%S")
-
 
     # --------------------------------------------------
     # HITTA AKTIV LEKTION
@@ -115,7 +67,6 @@ while simulation_time <= end_time:
     else:
         lesson = False
 
-
     # --------------------------------------------------
     # HITTA AKTUELL UTOMHUSTEMPERATUR
     # --------------------------------------------------
@@ -133,7 +84,6 @@ while simulation_time <= end_time:
         else:
             break
 
-    # Om simulationen börjar före första vädervärdet
     if current_weather is None and weather_today:
         current_weather = weather_today[0]
 
@@ -142,27 +92,23 @@ while simulation_time <= end_time:
     else:
         outside_temperature = None
 
-
     # --------------------------------------------------
     # OCCUPANCY
     # --------------------------------------------------
 
     target_occupancy = 25 if lesson else 0
 
-    # Personer kommer in gradvis
     if occupancy < target_occupancy:
         occupancy = min(
             occupancy + 5,
             target_occupancy
         )
 
-    # Personer lämnar gradvis
     elif occupancy > target_occupancy:
         occupancy = max(
             occupancy - 5,
             target_occupancy
         )
-
 
     # --------------------------------------------------
     # CO2
@@ -174,10 +120,7 @@ while simulation_time <= end_time:
     ventilation = (co2 - outdoor_co2) * 0.05
 
     co2 += generation - ventilation
-
-    # CO2 ska inte gå under utomhusnivån
     co2 = max(co2, outdoor_co2)
-
 
     # --------------------------------------------------
     # SKICKA OCCUPANCY
@@ -194,7 +137,6 @@ while simulation_time <= end_time:
         headers=headers
     )
 
-
     # --------------------------------------------------
     # SKICKA CO2
     # --------------------------------------------------
@@ -210,30 +152,6 @@ while simulation_time <= end_time:
         headers=headers
     )
 
-
-    # --------------------------------------------------
-    # SKICKA UTOMHUSTEMPERATUR
-    # --------------------------------------------------
-
-    if outside_temperature is not None:
-
-        weather_payload = {
-            "data_type": "text",
-            "value": str(outside_temperature)
-        }
-
-        weather_response = requests.put(
-            f"{BASE}api/sensors/outside-temperature/value",
-            json=weather_payload,
-            headers=headers
-        )
-
-        weather_status = weather_response.status_code
-
-    else:
-        weather_status = "No weather data"
-
-
     # --------------------------------------------------
     # PRINTA SIMULATIONEN
     # --------------------------------------------------
@@ -246,16 +164,9 @@ while simulation_time <= end_time:
         "| Occupancy:", occupancy,
         "| CO2:", round(co2),
         "| Occ:", occupancy_response.status_code,
-        "| CO2:", co2_response.status_code,
-        "| Weather:", weather_status
+        "| CO2 status:", co2_response.status_code
     )
-
-
-    # --------------------------------------------------
-    # NÄSTA SIMULATIONSSTEG
-    # --------------------------------------------------
 
     simulation_time += timestep
 
-    # 1 riktig sekund = 5 simulerade minuter
     time.sleep(1)
