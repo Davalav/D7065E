@@ -211,18 +211,22 @@ def main():
     session = requests.Session()
     rooms = []
     activated_equipment = []
+    
+    floor_data= {}
+    
     try:
         for configured_room in selected_rooms:
             room_name = configured_room["name"]
             floor = configured_room["floor"]
-            floor_data = api_json(
+            if floor not in floor_data:
+                floor_data[floor] = api_json(
                 session,
                 "GET",
                 args.base_url,
                 f"api/building/floors/level{floor}",
             )
             floor_room = next(
-                (item for item in floor_data["rooms"] if item["name"] == room_name),
+                (item for item in floor_data[floor]["rooms"] if item["name"] == room_name),
                 None,
             )
             if floor_room is None:
