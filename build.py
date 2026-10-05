@@ -77,6 +77,7 @@ sensors = [
     )
 ]
 fails=0
+equipment_list=[]
 for i in range(len(levels)):
     level = levels[i]
     room = rooms[i]
@@ -88,21 +89,28 @@ for i in range(len(levels)):
         equip["level"] = "level"+str(level)
         equip["room"] = room
         equip["status"] = "stopped"
-        response = requests.post(str(BASE+"api/equipment"), json=equip, headers=headers)
-        dic_response = json.loads(response.text)
+        equipment_list.append(equip)
+        
+# Skapa all equipment
+response = requests.post(str(BASE+"api/equipment/bulk"), json=equipment_list, headers=headers)
+dic_response = json.loads(response.text)
 
-        #if dic_response.contains("404"):
-        #if type(dic_response) is not dict:
-        if "error" in dic_response:
-            print(equip)
-            #print(response)
-            print(dic_response)
-            fails += 1
-            #print(type(response))
-
+#if dic_response.contains("404"):
+#if type(dic_response) is not dict:
+if "error" in dic_response:
+    print(equip)
+    #print(response)
+    print(dic_response)
+    fails += 1
+    #print(type(response))
+            
+#Skapar actuators
+for i in range(len(levels)):
+    level = levels[i]
+    room = rooms[i]
     payload = {"id":f"{room}-set","name":"Setpoint","type":"setpoint","state":f"{set_temp}"}
     response = requests.post(str(BASE+f"api/equipment/hvac-{room}/actuators"), json=payload, headers=headers)
-    payload = {"id":f"{room}-set","name":"Wattage","type":"wattage","state":f"{set_temp}"}
+    payload = {"id":f"{room}-watt","name":"Wattage","type":"wattage","state":f"{default_wattage}"}
     response = requests.post(str(BASE+f"api/equipment/hvac-{room}/actuators"), json=payload, headers=headers)
     #payload = {"id":f"hvac-{room}","name":f"HVAC {room}","type":"ac_unit","category":"hvac","level":f"level{level}","room":room,"status":"stopped"}
     #response = requests.post(str(BASE+"api/equipment"), json=payload, headers=headers)
