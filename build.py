@@ -8,7 +8,7 @@ BASE="http://127.0.0.1:9090/"
 headers = {'Content-Type': 'application/json'}
 
 if len(sys.argv) > 1 and sys.argv[1] == "Alfa":
-    f = open("rooms.json")
+    f = open("JSON files/rooms.json")
     roomsJson = json.loads(f.read())
     #print(roomsJson)
     levels =[]
@@ -93,8 +93,8 @@ for i in range(len(levels)):
         #if dic_response.contains("404"):
         #if type(dic_response) is not dict:
         if "error" in dic_response:
-            print(i)
-            print(response)
+            print(equip)
+            #print(response)
             print(dic_response)
             fails += 1
             #print(type(response))

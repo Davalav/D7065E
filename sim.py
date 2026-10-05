@@ -98,7 +98,7 @@ def step(BASE, curTemp,volume,deltaT,watt, room, walls, outside_temperature):
     return curTemp
 
 if len(sys.argv) > 1 and sys.argv[1] == "Alfa":
-    f = open("rooms.json")
+    f = open("JSON files/rooms.json")
     roomsJson = json.loads(f.read())
     #print(roomsJson)
     levels =[]
