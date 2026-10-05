@@ -3,6 +3,7 @@ import json
 from time import sleep
 import sys
 import pandas as pd
+import math
 
 BASE="http://127.0.0.1:9090/"
 
@@ -125,6 +126,10 @@ print("Json loaded")
 areas = []
 temps = []
 level_data= {}
+inner_wall_length=[]
+def pythagoras(a,b):
+    return math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2)
+
 for i in range(len(levels)):
     level = levels[i]
     room = rooms[i]
@@ -134,11 +139,22 @@ for i in range(len(levels)):
         object = json.loads(response.text)
         ObjRooms = object["rooms"]
         level_data[level] = ObjRooms
+        #print(level_data[level])
     
     #print(ObjRooms[0])
-    for rum in ObjRooms:
+    for rum in level_data[level]:
         if rum["name"]== room:
             areas.append(rum["area"])
+            wall_length= 0
+            pre_polygon = (-1,-1)
+            for polygon in rum["polygon"]:
+                if pre_polygon != (-1,-1):
+                    wall_length += pythagoras(pre_polygon, polygon)
+                pre_polygon = polygon
+            wall_length += pythagoras(rum["polygon"][0], rum["polygon"][-1])
+            inner_wall_length.append(wall_length-walls[i])
+            if(inner_wall_length[i]<0):
+                print("Negative wall found :(")
             #print("Found")
             break
             
@@ -223,7 +239,7 @@ while simulation_time <= end_time:
     sleep(1)
         
 for i in range(len(levels)):
-    # Set Hvac stopped    
+    # Set Hvac stopped
     payload["status"] = "stopped"
     response = requests.put(str(BASE+f"api/equipment/hvac-{rooms[i]}"), json=payload, headers=headers)
 print(response.json())

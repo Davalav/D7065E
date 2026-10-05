@@ -7,4 +7,8 @@ Simulera Alfa:
 python build.py Alfa
 python sim.py Alfa
 
+
+Öppna databasen:
+sqlit connect sqlite --file-path "data.db"
+
 https://www.overleaf.com/project/6a982a1d1d7b32586fd50cae
