@@ -1,245 +1,334 @@
-import requests
+import argparse
+from datetime import datetime, time, timedelta
 import json
-from time import sleep
+from pathlib import Path
 import sys
-import pandas as pd
-import math
+from time import sleep
 
-BASE="http://127.0.0.1:9090/"
+import requests
 
-headers = {'Content-Type': 'application/json'}
-#T_outside = -40
 
-# Read Lecture Schema and Weather
-with open("JSON files/Lectures.json", "r", encoding="utf-8") as f:
-    lecture_data = json.load(f)
+BASE = "http://127.0.0.1:9090/"
+DATA_DIR = Path(__file__).resolve().parent / "JSON files"
+REQUEST_TIMEOUT = 10
+ROOM_HEIGHT_METERS = 3.0
+AIR_DENSITY_KG_PER_M3 = 1.225
+AIR_HEAT_CAPACITY_J_PER_KG_K = 1000.0
+EXTERIOR_WALL_U_VALUE_W_PER_M2_K = 0.25
+VENTILATION_AIR_CHANGES_PER_HOUR = 0.5
+THERMAL_MASS_CAPACITY_J_PER_M2_K = 165_000.0
+AIR_MASS_COUPLING_W_PER_M2_K = 8.0
+DEFAULT_OCCUPANTS_PER_LECTURE = 20
+SENSIBLE_HEAT_PER_OCCUPANT_W = 75.0
 
-with open("JSON files/Weather.json", "r", encoding="utf-8") as f:
-    weather_data = json.load(f)
 
-schedule = lecture_data["schedule"]
-weather = weather_data["weather"]
+def parse_args():
+    parser = argparse.ArgumentParser(description="Simulate room temperatures.")
+    parser.add_argument(
+        "selection",
+        nargs="?",
+        default="0",
+        help="floor number, or 'Alfa' to simulate all configured rooms",
+    )
+    parser.add_argument("room", nargs="?", default="A109", help="room name")
+    parser.add_argument("--base-url", default=BASE, help="building simulator API URL")
+    parser.add_argument("--start", default="2026-09-21T08:00")
+    parser.add_argument("--end", default="2026-09-21T18:00")
+    parser.add_argument("--timestep-minutes", type=float, default=15)
+    parser.add_argument("--heater-watts", type=float, default=500)
+    parser.add_argument("--occupants-per-lecture", type=int, default=DEFAULT_OCCUPANTS_PER_LECTURE)
+    parser.add_argument("--delay-seconds", type=float, default=1)
+    return parser.parse_args()
 
-print("Schedule loaded:")
-print(schedule[:3])
 
-print("\nWeather loaded:")
-print(weather[:3])
-# -------------------------------
+def load_json(path):
+    with path.open("r", encoding="utf-8") as source:
+        return json.load(source)
 
-def format_seconds(seconds: float) -> str:
-    """
-    Convert a float number of seconds into a human-readable string.
-    Automatically scales from milliseconds up to days.
-    """
-    abs_seconds = abs(seconds)
-    sign = "-" if seconds < 0 else ""
 
-    if abs_seconds < 1e-3:
-        return f"{sign}{abs_seconds * 1e6:.3f} µs"
-    elif abs_seconds < 1:
-        return f"{sign}{abs_seconds * 1e3:.3f} ms"
-    elif abs_seconds < 60:
-        return f"{sign}{abs_seconds:.3f} s"
-    elif abs_seconds < 3600:
-        return f"{sign}{abs_seconds / 60:.3f} min"
-    #elif abs_seconds < 86400:
-    else:
-        return f"{sign}{abs_seconds / 3600:.3f} h"
-    #else:
-    #    return f"{sign}{abs_seconds / 86400:.3f} days"
+def api_json(session, method, base_url, path, **kwargs):
+    response = session.request(
+        method,
+        f"{base_url.rstrip('/')}/{path.lstrip('/')}",
+        timeout=REQUEST_TIMEOUT,
+        **kwargs,
+    )
+    response.raise_for_status()
+    return response.json()
 
-def step(BASE, curTemp,volume,deltaT,watt, room, walls, outside_temperature):
-    origWatt=watt
-    response = requests.get(f'{BASE}api/actuators/{room}-set')
-    object = json.loads(response.text)
-    #print(object)
-    #print(room)
-    setTemp = float(object["state"])
-    #print(setTemp)
 
-    # Värmeförlust: https://home-energy-model.co.uk/technical/fabric-heat-loss/
-    # Q=U\cdot A\cdot (T_inside-T_outside)
-    U=0.25
-    A= walls*3
-    T_diff= curTemp-outside_temperature
-    wattLoss= U*A*T_diff
-    # Ekvation för värmetillförsel:
-    # Q=\frac{m\cdot c\cdot \Delta T}{t}
-    # Omskrivet
-    # \Delta T=\frac{Q\cdot t}{m\cdot c}
-    cp = 1000
-    m = volume*1.225
+def prepare_weather(weather_rows):
+    weather_by_day = {}
+    for row in weather_rows:
+        day = row["Day"]
+        observed_at = time.fromisoformat(row["Time"])
+        temperature = float(row["Temperature"])
+        weather_by_day.setdefault(day, []).append((observed_at, temperature))
 
-    #Time to equilibrium (Inte helt korrekt då värmeförlusten är logaritmisk)
+    for observations in weather_by_day.values():
+        observations.sort(key=lambda observation: observation[0])
+    return weather_by_day
 
-    curTemp -= (wattLoss*deltaT)/(m*cp)
-    if(curTemp < setTemp):
 
-        watt = min(watt,(m*cp*abs(setTemp-curTemp))/deltaT)
-        #watt=0
-        curTemp += (watt*deltaT)/(m*cp)
-            
-        if origWatt == watt:
-            net_power = watt - wattLoss
+def outside_temperature_at(weather_by_day, timestamp):
+    observations = weather_by_day.get(timestamp.strftime("%A"))
+    if not observations:
+        raise ValueError(f"No weather observations for {timestamp.strftime('%A')}")
 
-            if net_power > 0:
-                t = (m * cp * (setTemp - curTemp)) / net_power
-                print(f"time to equil: {format_seconds(t)}")
-            else:
-                print("Setpoint cannot be reached with current HVAC power")
-    #if(walls>0):
-    #    curTemp=0
-    #temp += 0.2*(setTemp-temp)
-    #curTemp=volume/3
-    payload = {"data_type": "text", "value": str(round(curTemp,2))}
-    response = requests.put(str(BASE+f"api/sensors/{room}-temp/value"), json=payload, headers=headers)
-    #print(response.json())
-    #print(curTemp)
-    return curTemp
+    current_time = timestamp.time()
+    if current_time <= observations[0][0]:
+        return observations[0][1]
+    if current_time >= observations[-1][0]:
+        return observations[-1][1]
 
-if len(sys.argv) > 1 and sys.argv[1] == "Alfa":
-    f = open("JSON files/rooms.json")
-    roomsJson = json.loads(f.read())
-    #print(roomsJson)
-    levels =[]
-    rooms =[]
-    walls =[]
-    for i in roomsJson["rooms"]:
-        levels.append(i["floor"])
-        rooms.append(i["name"])
-        walls.append(i["walls"])
-else:
-    levels = [sys.argv[1] if len(sys.argv) >1 else "0"]
-    rooms = [sys.argv[2] if len(sys.argv) >2 else "A109"]
-    f = open("rooms.json")
-    roomsJson = json.loads(f.read())
-    walls = []
-    for i in roomsJson["rooms"]:
-        print(i)
-        if i["name"]=="A109":
-            walls = [i["walls"]]
-            print(f"Found A109: {walls}㎡")
-            break
+    for (before_time, before_temp), (after_time, after_temp) in zip(
+        observations, observations[1:]
+    ):
+        if before_time <= current_time <= after_time:
+            span = (
+                datetime.combine(timestamp.date(), after_time)
+                - datetime.combine(timestamp.date(), before_time)
+            ).total_seconds()
+            elapsed = (
+                datetime.combine(timestamp.date(), current_time)
+                - datetime.combine(timestamp.date(), before_time)
+            ).total_seconds()
+            fraction = elapsed / span
+            return before_temp + fraction * (after_temp - before_temp)
 
-print("Json loaded")
-areas = []
-temps = []
-level_data= {}
-inner_wall_length=[]
-def pythagoras(a,b):
-    return math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2)
+    raise ValueError(f"Could not interpolate weather at {timestamp}")
 
-for i in range(len(levels)):
-    level = levels[i]
-    room = rooms[i]
-    # Get Area
-    if level not in level_data:
-        response = requests.get(f'{BASE}api/building/floors/level{level}')
-        object = json.loads(response.text)
-        ObjRooms = object["rooms"]
-        level_data[level] = ObjRooms
-        #print(level_data[level])
-    
-    #print(ObjRooms[0])
-    for rum in level_data[level]:
-        if rum["name"]== room:
-            areas.append(rum["area"])
-            wall_length= 0
-            pre_polygon = (-1,-1)
-            for polygon in rum["polygon"]:
-                if pre_polygon != (-1,-1):
-                    wall_length += pythagoras(pre_polygon, polygon)
-                pre_polygon = polygon
-            wall_length += pythagoras(rum["polygon"][0], rum["polygon"][-1])
-            inner_wall_length.append(wall_length-walls[i])
-            if(inner_wall_length[i]<0):
-                print("Negative wall found :(")
-            #print("Found")
-            break
-            
-    #room_area = next((rum for rum in ObjRooms if rum["name"]== room),None)['area']
-    #areas.append(room_area)
-    #a109_area = rooms[97]['area']
-    #print(rooms[97])
-    
-    # Get temperature
-    response = requests.get(f'{BASE}api/sensors/{room}-temp')
-    object = json.loads(response.text)
-    #print(object["value"])
-    try:
-        temp = float(object["value"])
-        temps.append(temp)
-    except:
-        print(object)
-        print(room)
-    # Set Hvac running
-    response = requests.get(str(BASE+f'api/equipment/hvac-{room}'))
-    payload = json.loads(response.text)
-    payload["status"] = "running"
-    response = requests.put(str(BASE+f"api/equipment/hvac-{room}"), json=payload, headers=headers)
-    #print(response.json())
 
-print("Area loaded. Hvac activated")
-#time = 9*60*60 #Time in seconds
-#timestep = 60*60 #Time in seconds
-
-simulation_time = pd.Timestamp("2026-09-21 08:00")
-end_time = pd.Timestamp("2026-09-21 18:00")
-
-timestep = pd.Timedelta(minutes=15)
-
-print("Starting simulation")
-
-while simulation_time <= end_time:
-    current_day = simulation_time.day_name()
-    current_time = simulation_time.strftime("%H:%M:%S") 
-
-    weather_today = [
-        row for row in weather
-        if row["Day"] == current_day
-    ]
-
-    current_weather = None
-
-    for row in weather_today:
-        if row["Time"] <= current_time:
-            current_weather = row
-        else:
-            break    
-
-    if current_weather is None and weather_today:
-        current_weather = weather_today[0]
-
-    if current_weather:
-        outside_temperature = current_weather["Temperature"]
-    else:
-        outside_temperature = 0
-
-    print(
-        "Day:", simulation_time.day_name(),
-        "| Time:", simulation_time.strftime("%H:%M"),
-        "| Outside temp:", outside_temperature, "°C"
+def lecture_is_active(schedule, room, timestamp):
+    current_time = timestamp.time()
+    return any(
+        row["Day"] == timestamp.strftime("%A")
+        and row["Classroom"] == room
+        and row["Lecture"]
+        and time.fromisoformat(row["Start"]) <= current_time < time.fromisoformat(row["End"])
+        for row in schedule
     )
 
-    for i in range(len(levels)):
-        temps[i] = step(
-            BASE,
-            temps[i],
-            areas[i] * 3,
-            timestep.total_seconds(),
-            500,
-            rooms[i],
-            walls[i],
-            outside_temperature
+
+def simulate_step(
+    air_temperature,
+    mass_temperature,
+    volume_m3,
+    floor_area_m2,
+    exterior_wall_length_m,
+    outside_temperature,
+    setpoint,
+    heater_max_watts,
+    duration_seconds,
+    internal_gains_watts=0.0,
+):
+    if volume_m3 <= 0 or floor_area_m2 <= 0:
+        raise ValueError("Room volume and floor area must be positive")
+    if duration_seconds <= 0:
+        raise ValueError("Timestep duration must be positive")
+
+    air_capacity = (
+        AIR_DENSITY_KG_PER_M3 * volume_m3 * AIR_HEAT_CAPACITY_J_PER_KG_K
+    )
+    mass_capacity = floor_area_m2 * THERMAL_MASS_CAPACITY_J_PER_M2_K
+    exterior_wall_area = max(0.0, exterior_wall_length_m) * ROOM_HEIGHT_METERS
+    fabric_conductance = EXTERIOR_WALL_U_VALUE_W_PER_M2_K * exterior_wall_area
+    ventilation_conductance = (
+        AIR_DENSITY_KG_PER_M3
+        * AIR_HEAT_CAPACITY_J_PER_KG_K
+        * volume_m3
+        * VENTILATION_AIR_CHANGES_PER_HOUR
+        / 3600
+    )
+    air_mass_conductance = floor_area_m2 * AIR_MASS_COUPLING_W_PER_M2_K
+    total_outside_conductance = fabric_conductance + ventilation_conductance
+
+    # Substeps keep this explicit two-node heat balance stable at larger API timesteps.
+    substep_count = max(1, int(duration_seconds // 60) + 1)
+    substep_seconds = duration_seconds / substep_count
+    for _ in range(substep_count):
+        outside_loss = total_outside_conductance * (
+            air_temperature - outside_temperature
+        )
+        mass_exchange = air_mass_conductance * (mass_temperature - air_temperature)
+        required_heating = (
+            (setpoint - air_temperature) * air_capacity / substep_seconds
+            - mass_exchange
+            - internal_gains_watts
+            + outside_loss
+        )
+        heater_watts = (
+            min(heater_max_watts, max(0.0, required_heating))
+            if air_temperature < setpoint
+            else 0.0
+        )
+        air_temperature += (
+            heater_watts
+            + internal_gains_watts
+            - outside_loss
+            + mass_exchange
+        ) * substep_seconds / air_capacity
+        mass_temperature -= (
+            mass_exchange * substep_seconds / mass_capacity
         )
 
-    simulation_time += timestep
+    return air_temperature, mass_temperature
 
-    sleep(1)
-        
-for i in range(len(levels)):
-    # Set Hvac stopped
-    payload["status"] = "stopped"
-    response = requests.put(str(BASE+f"api/equipment/hvac-{rooms[i]}"), json=payload, headers=headers)
-print(response.json())
+
+def main():
+    args = parse_args()
+    start_time = datetime.fromisoformat(args.start)
+    end_time = datetime.fromisoformat(args.end)
+    timestep = timedelta(minutes=args.timestep_minutes)
+    if end_time < start_time:
+        raise ValueError("End time must be at or after start time")
+    if timestep.total_seconds() <= 0:
+        raise ValueError("Timestep must be positive")
+    if args.heater_watts < 0 or args.occupants_per_lecture < 0:
+        raise ValueError("Heater power and occupancy must be non-negative")
+    if args.delay_seconds < 0:
+        raise ValueError("Delay must be non-negative")
+
+    lecture_data = load_json(DATA_DIR / "Lectures.json")
+    weather_data = load_json(DATA_DIR / "Weather.json")
+    room_data = load_json(DATA_DIR / "rooms.json")
+    schedule = lecture_data["schedule"]
+    weather_by_day = prepare_weather(weather_data["weather"])
+    configured_rooms = {str(room["name"]): room for room in room_data["rooms"]}
+
+    if args.selection == "Alfa":
+        selected_rooms = list(room_data["rooms"])
+    else:
+        room = configured_rooms.get(args.room)
+        if room is None:
+            raise ValueError(f"Room {args.room!r} is not present in {DATA_DIR / 'rooms.json'}")
+        if str(room["floor"]) != args.selection:
+            raise ValueError(
+                f"Room {args.room!r} is on floor {room['floor']}, not {args.selection}"
+            )
+        selected_rooms = [room]
+
+    session = requests.Session()
+    rooms = []
+    activated_equipment = []
+    try:
+        for configured_room in selected_rooms:
+            room_name = configured_room["name"]
+            floor = configured_room["floor"]
+            floor_data = api_json(
+                session,
+                "GET",
+                args.base_url,
+                f"api/building/floors/level{floor}",
+            )
+            floor_room = next(
+                (item for item in floor_data["rooms"] if item["name"] == room_name),
+                None,
+            )
+            if floor_room is None:
+                raise ValueError(
+                    f"Room {room_name!r} not found on floor {floor} in building API"
+                )
+
+            sensor = api_json(
+                session, "GET", args.base_url, f"api/sensors/{room_name}-temp"
+            )
+            air_temperature = float(sensor["value"])
+            equipment_path = f"api/equipment/hvac-{room_name}"
+            equipment = api_json(session, "GET", args.base_url, equipment_path)
+            activated_equipment.append((room_name, equipment_path, equipment))
+            equipment["status"] = "running"
+            api_json(
+                session,
+                "PUT",
+                args.base_url,
+                equipment_path,
+                json=equipment,
+            )
+            rooms.append(
+                {
+                    "name": room_name,
+                    "area": float(floor_room["area"]),
+                    "wall_length": float(configured_room["walls"]),
+                    "air_temperature": air_temperature,
+                    "mass_temperature": air_temperature,
+                }
+            )
+
+        print(f"Simulating {len(rooms)} room(s) from {start_time} to {end_time}")
+        simulation_time = start_time
+        while simulation_time <= end_time:
+            outside_temperature = outside_temperature_at(weather_by_day, simulation_time)
+            print(
+                f"{simulation_time:%A %H:%M} | "
+                f"Outside temperature: {outside_temperature:.1f} °C"
+            )
+
+            for room in rooms:
+                occupied = lecture_is_active(
+                    schedule, room["name"], simulation_time
+                )
+                internal_gains = (
+                    args.occupants_per_lecture * SENSIBLE_HEAT_PER_OCCUPANT_W
+                    if occupied
+                    else 0.0
+                )
+                room["air_temperature"], room["mass_temperature"] = simulate_step(
+                    air_temperature=room["air_temperature"],
+                    mass_temperature=room["mass_temperature"],
+                    volume_m3=room["area"] * ROOM_HEIGHT_METERS,
+                    floor_area_m2=room["area"],
+                    exterior_wall_length_m=room["wall_length"],
+                    outside_temperature=outside_temperature,
+                    setpoint=float(
+                        api_json(
+                            session,
+                            "GET",
+                            args.base_url,
+                            f"api/actuators/{room['name']}-set",
+                        )["state"]
+                    ),
+                    heater_max_watts=args.heater_watts,
+                    duration_seconds=timestep.total_seconds(),
+                    internal_gains_watts=internal_gains,
+                )
+                api_json(
+                    session,
+                    "PUT",
+                    args.base_url,
+                    f"api/sensors/{room['name']}-temp/value",
+                    json={
+                        "data_type": "text",
+                        "value": str(round(room["air_temperature"], 2)),
+                    },
+                )
+                #print(f"{room['name']}: {room['air_temperature']:.2f} °C"f"{' (lecture)' if occupied else ''}")
+
+            simulation_time += timestep
+            if args.delay_seconds:
+                sleep(args.delay_seconds)
+    finally:
+        cleanup_errors = []
+        for room_name, equipment_path, equipment in activated_equipment:
+            try:
+                equipment["status"] = "stopped"
+                api_json(
+                    session,
+                    "PUT",
+                    args.base_url,
+                    equipment_path,
+                    json=equipment,
+                )
+            except requests.RequestException as error:
+                cleanup_errors.append(f"{room_name}: {error}")
+        if cleanup_errors:
+            print(
+                "Failed to stop HVAC for " + "; ".join(cleanup_errors),
+                file=sys.stderr,
+            )
+            if sys.exc_info()[0] is None:
+                raise RuntimeError("Could not stop all activated HVAC equipment")
+
+
+if __name__ == "__main__":
+    main()
