@@ -12,7 +12,7 @@ BASE="http://127.0.0.1:9090/"
 headers = {'Content-Type': 'application/json'}
 
 if len(sys.argv) > 1 and sys.argv[1] == "Alfa":
-    f = open("rooms.json")
+    f = open("JSON files/rooms.json")
     roomsJson = json.loads(f.read())
     #print(roomsJson)
     levels =[]
@@ -35,6 +35,7 @@ table_creation_query = """
         Temperature FLOAT,
         Set_Temperature FLOAT,
         CO2 FLOAT,
+        WATT FLOAT,
         PRIMARY KEY (Name, Floor)
     );
 """
@@ -44,19 +45,15 @@ query = 'SELECT sqlite_version();'
 c.execute(query)
 
 room_creation_query = """
-INSERT INTO Rooms(Name, Floor, Timestamp, Temperature, CO2)
-Values(?, ?, ?, ?, ?);
-"""
-
-room_creation_query = """
-INSERT INTO Rooms(Name, Floor, Timestamp, Temperature, Set_Temperature, CO2)
-Values(?, ?, ?, ?, ?, ?)
+INSERT INTO Rooms(Name, Floor, Timestamp, Temperature, Set_Temperature, CO2, WATT)
+Values(?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT (Name, Floor) DO
 UPDATE
 SET
     Temperature = excluded.Temperature,
     CO2 = excluded.CO2,
     Set_Temperature = excluded.Set_Temperature
+    WATT = excluded.WATT
 WHERE
     excluded.Timestamp > Rooms.Timestamp
 """
@@ -78,11 +75,14 @@ for i in range(len(levels)):
     dic_response = json.loads(response.text)
     setTemp = float(dic_response["state"])
     
+    response = requests.get(f'{BASE}api/actuators/{room}-watt')
+    dic_response = json.loads(response.text)
+    watt = float(dic_response["state"])
     #print(room_creation_query)
     try:
-        c.execute(room_creation_query, (room, level, time.time(), temp, setTemp, co2))
+        c.execute(room_creation_query, (room, level, time.time(), temp, setTemp, co2, watt))
     except Exception as e:
         print(e)
-        print(f"{room} {level} {time.time()} {temp} {setTemp} {co2}")
+        print(f"{room} {level} {time.time()} {temp} {setTemp} {co2} {watt}")
     conn.commit()
 c.close()

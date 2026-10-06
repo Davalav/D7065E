@@ -8,6 +8,10 @@ python build.py Alfa
 python sim.py Alfa
 
 
+Actuator:
+python sensors.py Alfa
+
+
 Öppna databasen:
 sqlit connect sqlite --file-path "data.db"
 

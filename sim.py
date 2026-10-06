@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument("--start", default="2026-09-21T08:00")
     parser.add_argument("--end", default="2026-09-21T18:00")
     parser.add_argument("--timestep-minutes", type=float, default=15)
-    parser.add_argument("--heater-watts", type=float, default=500)
+    #parser.add_argument("--heater-watts", type=float, default=500)
     parser.add_argument("--occupants-per-lecture", type=int, default=DEFAULT_OCCUPANTS_PER_LECTURE)
     parser.add_argument("--delay-seconds", type=float, default=1)
     return parser.parse_args()
@@ -157,11 +157,12 @@ def simulate_step(
             - internal_gains_watts
             + outside_loss
         )
-        heater_watts = (
-            min(heater_max_watts, max(0.0, required_heating))
-            if air_temperature < setpoint
-            else 0.0
-        )
+        #heater_watts = (
+        #    min(heater_max_watts, max(0.0, required_heating))
+        #    if air_temperature < setpoint
+        #    else 0.0
+        #)
+        heater_watts = heater_max_watts
         air_temperature += (
             heater_watts
             + internal_gains_watts
@@ -184,8 +185,8 @@ def main():
         raise ValueError("End time must be at or after start time")
     if timestep.total_seconds() <= 0:
         raise ValueError("Timestep must be positive")
-    if args.heater_watts < 0 or args.occupants_per_lecture < 0:
-        raise ValueError("Heater power and occupancy must be non-negative")
+    #if args.heater_watts < 0 or args.occupants_per_lecture < 0:
+    #    raise ValueError("Heater power and occupancy must be non-negative")
     if args.delay_seconds < 0:
         raise ValueError("Delay must be non-negative")
 
@@ -277,6 +278,7 @@ def main():
                     if occupied
                     else 0.0
                 )
+                
                 room["air_temperature"], room["mass_temperature"] = simulate_step(
                     air_temperature=room["air_temperature"],
                     mass_temperature=room["mass_temperature"],
@@ -292,7 +294,14 @@ def main():
                             f"api/actuators/{room['name']}-set",
                         )["state"]
                     ),
-                    heater_max_watts=args.heater_watts,
+                    heater_max_watts=float(
+                        api_json(
+                            session,
+                            "GET",
+                            args.base_url,
+                            f"api/actuators/{room['name']}-watt",
+                        )["state"]
+                    ),
                     duration_seconds=timestep.total_seconds(),
                     internal_gains_watts=internal_gains,
                 )
