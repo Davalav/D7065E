@@ -7,22 +7,22 @@ services:
       - "127.0.0.1:9090:9090"
     healthcheck:
       test: ["CMD", "/buildsim", "health", "--url", "http://127.0.0.1:9090/healthz"]
-      interval: 10s
+      interval: 30s
       timeout: 3s
       retries: 3
-      start_period: 5s
+      start_period: 10s
     restart: unless-stopped
   mosquitto:
     image: eclipse-mosquitto:2
-    entrypoint: ["/bin/sh", "/deploy/entrypoint.sh"]
+    #entrypoint: ["/bin/sh", "/deploy/entrypoint.sh"]
     environment:
       MQTT_PASSWORDS: >-
         physics:physics-pw sensor:sensor-pw controller:controller-pw
         actuator:actuator-pw storage:storage-pw viz:viz-pw
     volumes:
-      - ./deploy/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro,z
-      - ./deploy/mosquitto/acl:/mosquitto/config/acl:ro,z
-      - ./deploy/mosquitto/entrypoint.sh:/deploy/entrypoint.sh:ro,z
+      - ./deploy/mosquitto/config:/mosquitto/config
+      - ./deploy/mosquitto/data:/mosquitto/data
+      - ./deploy/mosquitto/log:/mosquitto/log
     ports:
       - "127.0.0.1:1883:1883"
     restart: unless-stopped
