@@ -265,6 +265,8 @@ def main():
         print(f"Simulating {len(rooms)} room(s) from {start_time} to {end_time}")
         simulation_time = start_time
         while simulation_time <= end_time:
+        #  If an hour has passed, post to actuator.py
+
             outside_temperature = outside_temperature_at(weather_by_day, simulation_time)
             print(
                 f"{simulation_time:%A %H:%M} | "
