@@ -99,13 +99,14 @@ def outside_temperature_at(weather_by_day, timestamp):
     raise ValueError(f"Could not interpolate weather at {timestamp}")
 
 
-def lecture_is_active(schedule, room, timestamp):
+def lecture_is_active(schedule, sessions, room, timestamp):
     current_time = timestamp.time()
     return any(
         row["Day"] == timestamp.strftime("%A")
         and row["Classroom"] == room
         and row["Lecture"]
-        and time.fromisoformat(row["Start"]) <= current_time < time.fromisoformat(row["End"])
+        #and time.fromisoformat(row["Start"]) <= current_time < time.fromisoformat(row["End"])
+        and time.fromisoformat(sessions[row["Session"]-1]["StartTime"]) <= current_time < time.fromisoformat(sessions[row["Session"]-1]["EndTime"])
         for row in schedule
     )
 
@@ -151,12 +152,12 @@ def simulate_step(
             air_temperature - outside_temperature
         )
         mass_exchange = air_mass_conductance * (mass_temperature - air_temperature)
-        required_heating = (
-            (setpoint - air_temperature) * air_capacity / substep_seconds
-            - mass_exchange
-            - internal_gains_watts
-            + outside_loss
-        )
+        #required_heating = (
+        #    (setpoint - air_temperature) * air_capacity / substep_seconds
+        #    - mass_exchange
+        #    - internal_gains_watts
+        #    + outside_loss
+        #)
         #heater_watts = (
         #    min(heater_max_watts, max(0.0, required_heating))
         #    if air_temperature < setpoint
@@ -194,6 +195,7 @@ def main():
     weather_data = load_json(DATA_DIR / "Weather.json")
     room_data = load_json(DATA_DIR / "rooms.json")
     schedule = lecture_data["schedule"]
+    sessions = lecture_data["sessions"]
     weather_by_day = prepare_weather(weather_data["weather"])
     configured_rooms = {str(room["name"]): room for room in room_data["rooms"]}
 
@@ -271,7 +273,7 @@ def main():
 
             for room in rooms:
                 occupied = lecture_is_active(
-                    schedule, room["name"], simulation_time
+                    schedule, sessions, room["name"], simulation_time
                 )
                 internal_gains = (
                     args.occupants_per_lecture * SENSIBLE_HEAT_PER_OCCUPANT_W
