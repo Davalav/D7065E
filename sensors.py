@@ -51,8 +51,8 @@ ON CONFLICT (Name, Floor) DO
 UPDATE
 SET
     Temperature = excluded.Temperature,
+    Set_Temperature = excluded.Set_Temperature,
     CO2 = excluded.CO2,
-    Set_Temperature = excluded.Set_Temperature
     WATT = excluded.WATT
 WHERE
     excluded.Timestamp > Rooms.Timestamp
