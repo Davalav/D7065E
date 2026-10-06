@@ -32,40 +32,30 @@
       "Day": "Monday",
       "Classroom": "A109",
       "Session": 1,
-      "Start": "08:15:00",
-      "End": "09:45:00",
       "Lecture": true
     },
     {
       "Day": "Monday",
       "Classroom": "A109",
       "Session": 2,
-      "Start": "10:15:00",
-      "End": "11:45:00",
       "Lecture": false
     },
     {
       "Day": "Monday",
       "Classroom": "A109",
       "Session": 3,
-      "Start": "13:00:00",
-      "End": "14:30:00",
       "Lecture": true
     },
     {
       "Day": "Monday",
       "Classroom": "A109",
       "Session": 4,
-      "Start": "14:45:00",
-      "End": "16:15:00",
       "Lecture": false
     },
     {
       "Day": "Monday",
       "Classroom": "A109",
       "Session": 5,
-      "Start": "16:30:00",
-      "End": "18:00:00",
       "Lecture": false
     },
 
@@ -73,40 +63,30 @@
       "Day": "Tuesday",
       "Classroom": "A109",
       "Session": 1,
-      "Start": "08:15:00",
-      "End": "09:45:00",
       "Lecture": false
     },
     {
       "Day": "Tuesday",
       "Classroom": "A109",
       "Session": 2,
-      "Start": "10:15:00",
-      "End": "11:45:00",
       "Lecture": true
     },
     {
       "Day": "Tuesday",
       "Classroom": "A109",
       "Session": 3,
-      "Start": "13:00:00",
-      "End": "14:30:00",
       "Lecture": true
     },
     {
       "Day": "Tuesday",
       "Classroom": "A109",
       "Session": 4,
-      "Start": "14:45:00",
-      "End": "16:15:00",
       "Lecture": false
     },
     {
       "Day": "Tuesday",
       "Classroom": "A109",
       "Session": 5,
-      "Start": "16:30:00",
-      "End": "18:00:00",
       "Lecture": false
     },
 
@@ -114,40 +94,30 @@
       "Day": "Wednesday",
       "Classroom": "A109",
       "Session": 1,
-      "Start": "08:15:00",
-      "End": "09:45:00",
       "Lecture": true
     },
     {
       "Day": "Wednesday",
       "Classroom": "A109",
       "Session": 2,
-      "Start": "10:15:00",
-      "End": "11:45:00",
       "Lecture": true
     },
     {
       "Day": "Wednesday",
       "Classroom": "A109",
       "Session": 3,
-      "Start": "13:00:00",
-      "End": "14:30:00",
       "Lecture": false
     },
     {
       "Day": "Wednesday",
       "Classroom": "A109",
       "Session": 4,
-      "Start": "14:45:00",
-      "End": "16:15:00",
       "Lecture": true
     },
     {
       "Day": "Wednesday",
       "Classroom": "A109",
       "Session": 5,
-      "Start": "16:30:00",
-      "End": "18:00:00",
       "Lecture": false
     },
 
@@ -155,40 +125,30 @@
       "Day": "Thursday",
       "Classroom": "A109",
       "Session": 1,
-      "Start": "08:15:00",
-      "End": "09:45:00",
       "Lecture": false
     },
     {
       "Day": "Thursday",
       "Classroom": "A109",
       "Session": 2,
-      "Start": "10:15:00",
-      "End": "11:45:00",
       "Lecture": true
     },
     {
       "Day": "Thursday",
       "Classroom": "A109",
       "Session": 3,
-      "Start": "13:00:00",
-      "End": "14:30:00",
       "Lecture": false
     },
     {
       "Day": "Thursday",
       "Classroom": "A109",
       "Session": 4,
-      "Start": "14:45:00",
-      "End": "16:15:00",
       "Lecture": true
     },
     {
       "Day": "Thursday",
       "Classroom": "A109",
       "Session": 5,
-      "Start": "16:30:00",
-      "End": "18:00:00",
       "Lecture": false
     },
 
@@ -196,40 +156,649 @@
       "Day": "Friday",
       "Classroom": "A109",
       "Session": 1,
-      "Start": "08:15:00",
-      "End": "09:45:00",
       "Lecture": true
     },
     {
       "Day": "Friday",
       "Classroom": "A109",
       "Session": 2,
-      "Start": "10:15:00",
-      "End": "11:45:00",
       "Lecture": false
     },
     {
       "Day": "Friday",
       "Classroom": "A109",
       "Session": 3,
-      "Start": "13:00:00",
-      "End": "14:30:00",
       "Lecture": true
     },
     {
       "Day": "Friday",
       "Classroom": "A109",
       "Session": 4,
-      "Start": "14:45:00",
-      "End": "16:15:00",
       "Lecture": false
     },
     {
       "Day": "Friday",
       "Classroom": "A109",
       "Session": 5,
-      "Start": "16:30:00",
-      "End": "18:00:00",
+      "Lecture": false
+    },
+
+    {
+      "Day": "Monday",
+      "Classroom": "A107",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A107",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A107",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A107",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A107",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Tuesday",
+      "Classroom": "A107",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A107",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A107",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A107",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A107",
+      "Session": 5,
+      "Lecture": false
+    },
+
+    {
+      "Day": "Wednesday",
+      "Classroom": "A107",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A107",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A107",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A107",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A107",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Thursday",
+      "Classroom": "A107",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A107",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A107",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A107",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A107",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Friday",
+      "Classroom": "A107",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A107",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A107",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A107",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A107",
+      "Session": 5,
+      "Lecture": false
+    },
+
+    {
+      "Day": "Monday",
+      "Classroom": "A108",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A108",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A108",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A108",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A108",
+      "Session": 5,
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A108",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A108",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A108",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A108",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A108",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Wednesday",
+      "Classroom": "A108",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A108",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A108",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A108",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A108",
+      "Session": 5,
+      "Lecture": false
+    },
+
+    {
+      "Day": "Thursday",
+      "Classroom": "A108",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A108",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A108",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A108",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A108",
+      "Session": 5,
+      "Lecture": false
+    },
+
+    {
+      "Day": "Friday",
+      "Classroom": "A108",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A108",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A108",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A108",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A108",
+      "Session": 5,
+      "Lecture": true
+    },
+
+        {
+      "Day": "Monday",
+      "Classroom": "A110",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A110",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A110",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A110",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A110",
+      "Session": 5,
+      "Lecture": false
+    },
+
+    {
+      "Day": "Tuesday",
+      "Classroom": "A110",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A110",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A110",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A110",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A110",
+      "Session": 5,
+      "Lecture": false
+    },
+
+    {
+      "Day": "Wednesday",
+      "Classroom": "A110",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A110",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A110",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A110",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A110",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Thursday",
+      "Classroom": "A110",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A110",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A110",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A110",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A110",
+      "Session": 5,
+      "Lecture": false
+    },
+
+    {
+      "Day": "Friday",
+      "Classroom": "A110",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A110",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A110",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A110",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A110",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Monday",
+      "Classroom": "A111",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A111",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A111",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A111",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Monday",
+      "Classroom": "A111",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Tuesday",
+      "Classroom": "A111",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A111",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A111",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A111",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Tuesday",
+      "Classroom": "A111",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Wednesday",
+      "Classroom": "A111",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A111",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A111",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A111",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Wednesday",
+      "Classroom": "A111",
+      "Session": 5,
+      "Lecture": false
+    },
+
+    {
+      "Day": "Thursday",
+      "Classroom": "A111",
+      "Session": 1,
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A111",
+      "Session": 2,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A111",
+      "Session": 3,
+      "Lecture": true
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A111",
+      "Session": 4,
+      "Lecture": false
+    },
+    {
+      "Day": "Thursday",
+      "Classroom": "A111",
+      "Session": 5,
+      "Lecture": true
+    },
+
+    {
+      "Day": "Friday",
+      "Classroom": "A111",
+      "Session": 1,
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A111",
+      "Session": 2,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A111",
+      "Session": 3,
+      "Lecture": false
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A111",
+      "Session": 4,
+      "Lecture": true
+    },
+    {
+      "Day": "Friday",
+      "Classroom": "A111",
+      "Session": 5,
       "Lecture": false
     }
   ]
