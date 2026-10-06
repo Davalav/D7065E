@@ -5,8 +5,7 @@
 
 ## Simulera Alfa:
 python build.py Alfa
-python sim.py Alfa
-
+python sim.py Alfa --delay-seconds 0
 
 ## Actuator:
 python sensors.py Alfa
@@ -14,6 +13,18 @@ python sensors.py Alfa
 
 ## Öppna databasen:
 sqlit connect sqlite --file-path "data.db"
+
+
+
+## TODO
+- Containerize
+- Actuator/Autonomous decision making agent
+- Dashboard
+- Project paper
+- Test plan
+- C4 context and container diagrams
+- MQTT
+
 
 
 ## Project proposal
