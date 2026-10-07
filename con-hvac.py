@@ -1,13 +1,41 @@
-# Decision making
+# En Actuator
 import time
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import CallbackAPIVersion
 import argparse
 import paho.mqtt.publish as publish
 import json
+import requests
+
+
+BASE="http://127.0.0.1:9090/"
+
+headers = {'Content-Type': 'application/json'}
+
+default_set_temp=21
+default_wattage=300
+equipments = {
+    "hvac": {
+        "id": "hvac-",
+        "name": "HVAC ",
+        "type": "ac_unit",
+        "category": "hvac",      
+    },
+    "set_temp":{
+        "id":"-set",
+        "name":"Setpoint",
+        "type":"setpoint",
+        "state":f"{default_set_temp}"},
+    "watt":{    
+        "id":"-watt",
+        "name":"Wattage",
+        "type":"wattage",
+        "state":f"{default_wattage}"
+    }
+}
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="One Decision maker")
+    parser = argparse.ArgumentParser(description="One Actuator")
     parser.add_argument("--level", default="0")
     parser.add_argument("--room", default="A109")
     parser.add_argument("--type", default="temp")
@@ -47,6 +75,30 @@ PORT = 1883
     
 def main():
     args = parse_args()
+    
+    hvac = equipments["hvac"]
+    hvac["id"] = hvac["id"] + args.room
+    hvac["name"] = hvac["name"]+ args.room
+    hvac["level"] = "level"+args.level
+    hvac["room"] = args.room
+    hvac["status"] = "running"
+    response = requests.post(str(BASE+"api/equipment"), json=hvac, headers=headers)
+    dic_response = json.loads(response.text)
+    print(dic_response)
+    
+    
+    set_temp = equipments["set_temp"]
+    set_temp["id"] = args.room + set_temp["id"]
+    response = requests.post(str(BASE+f"api/equipment/hvac-{args.room}/actuators"), json=set_temp, headers=headers)
+    dic_response = json.loads(response.text)
+    print(dic_response)
+    
+    watt = equipments["watt"]
+    watt["id"] = args.room + watt["id"]
+    response = requests.post(str(BASE+f"api/equipment/hvac-{args.room}/actuators"), json=watt, headers=headers)
+    dic_response = json.loads(response.text)
+    print(dic_response)
+    
     print("Ansluter till MQTT-broker...")
     
     # 3. Initiera klienten (Viktigt: Ange CallbackAPIVersion.VERSION2 för paho-mqtt v2.x)
