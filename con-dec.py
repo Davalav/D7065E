@@ -2,6 +2,17 @@
 import time
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import CallbackAPIVersion
+import argparse
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="One Decision maker")
+    parser.add_argument("--level", default="0")
+    parser.add_argument("--room", default="A109")
+    parser.add_argument("--type", default="temp")
+    #parser.add_argument("--sensor", default="")
+    #parser.add_argument("--actuator", default="")
+    return parser.parse_args()
+
 
 # 1. Defeniera vad som ska hända när klienten ansluter till brokern
 def on_connect(client, userdata, flags, reason_code, properties=None):
@@ -9,7 +20,7 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
         print("Ansluten till brokern!")
         # Prenumerera på önskat ämne efter lyckad anslutning
         # Ersätt "test/topic" med ditt eget ämne. Använd "#" som wildcard för alla ämnen.
-        client.subscribe("test/topic")
+        client.subscribe(f"test/{id}")
     else:
         print(f"Anslutning misslyckades med kod: {reason_code}")
 
@@ -33,6 +44,7 @@ PORT = 1883
 print("Ansluter till MQTT-broker...")
 client.connect(BROKER, PORT, keepalive=60)
 
+id = "A109-temp-dec"
 # 5. Starta nätverksloopen som lyssnar efter meddelanden i bakgrunden
 # loop_forever() blockerar programmet och körs tills du stänger av med Ctrl+C
 try:

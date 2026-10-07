@@ -36,7 +36,8 @@ En container per sak:
 - Sensor ->
 - Decision making ->
 - Actuator ->
-- Simulation
+- Simulation ->
+- Sensor
 
 
 ## Project proposal
