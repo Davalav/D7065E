@@ -26,3 +26,22 @@ services:
     ports:
       - "127.0.0.1:1883:1883"
     restart: unless-stopped
+  occupancysim:
+    build:
+      context: ./external/occupancysim
+    environment:
+      BUILDSIM_URL: http://buildsim:9090
+      BUILDSIM_PUBLIC_URL: http://127.0.0.1:9090
+      OCCUPANCY_FACTOR: "60"   # simulated seconds per real second
+    ports:
+      - "127.0.0.1:8081:8081"
+    depends_on:
+      buildsim:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/buildsim", "health", "--url", "http://127.0.0.1:8081/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped

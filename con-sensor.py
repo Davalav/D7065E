@@ -79,7 +79,7 @@ def main():
     
     
     response = requests.get(str(BASE+f"api/sensors/{sensor["id"]}"), json=sensor, headers=headers)
-    dic_response = json.loads(response.text.replace("'",'"'))
+    dic_response = json.loads(response.text)
     print(dic_response)
     publish.single(
         topic=f"{args.level}/{args.room}/{args.type}/dec", 
