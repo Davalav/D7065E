@@ -33,9 +33,10 @@ def on_message(client, userdata, msg):
     #dic_response = json.loads(msg.payload.decode('utf-8'))
     publish.single(
         topic=userdata["send_topic"], 
-        payload="{ 'watt':300 }", 
+        payload='{ "watt":"300" }', 
         hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
     )
+    print("Uppdaterar watt")
 
 
 # 4. Ange broker-adress och port
@@ -43,17 +44,26 @@ def on_message(client, userdata, msg):
 BROKER = "localhost" 
 PORT = 1883
 
-
+default_set_temp=21
     
 def main():
     args = parse_args()
     print("Ansluter till MQTT-broker...")
     
-    # 3. Initiera klienten (Viktigt: Ange CallbackAPIVersion.VERSION2 för paho-mqtt v2.x)
     userdata = {
         "listen_topic": f"{args.level}/{args.room}/{args.type}/dec",
         "send_topic": f"{args.level}/{args.room}/{args.type}/ac"
     }
+    payload={ "set_temp":str(default_set_temp) }
+    payload = str(payload)
+    print(payload)
+    publish.single(
+        topic=userdata["send_topic"],
+        payload=payload,
+        hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
+    )
+    
+    # 3. Initiera klienten (Viktigt: Ange CallbackAPIVersion.VERSION2 för paho-mqtt v2.x)
     client = mqtt.Client(
         callback_api_version=CallbackAPIVersion.VERSION2,
         userdata=userdata  # <--- HÄR skickar du med datan

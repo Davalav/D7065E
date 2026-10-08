@@ -75,9 +75,15 @@ def main():
     sensor["id"] = args.room + sensor["id"]
     response = requests.post(str(BASE+f"api/equipment/{args.type}-{args.room}/sensors"), json=sensor, headers=headers)
     dic_response = json.loads(response.text)
+    print(dic_response)
+    
+    
+    response = requests.get(str(BASE+f"api/sensors/{sensor["id"]}"), json=sensor, headers=headers)
+    dic_response = json.loads(response.text.replace("'",'"'))
+    print(dic_response)
     publish.single(
         topic=f"{args.level}/{args.room}/{args.type}/dec", 
-        payload="Hej från Python!", 
+        payload=str(dic_response), 
         hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
     )
     #Websocket wait for update

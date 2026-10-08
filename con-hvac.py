@@ -35,7 +35,7 @@ equipments = {
 }
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="One Actuator")
+    parser = argparse.ArgumentParser(description="One HVAC")
     parser.add_argument("--level", default="0")
     parser.add_argument("--room", default="A109")
     parser.add_argument("--type", default="temp")
@@ -59,11 +59,25 @@ def on_message(client, userdata, msg):
     # msg.payload kommer som bytes, använd .decode() för att göra om till text (str)
     print(f"Mottaget meddelande på '{msg.topic}': {msg.payload.decode('utf-8')}")
     #dic_response = json.loads(msg.payload.decode('utf-8'))
-    publish.single(
-        topic=userdata["send_topic"], 
-        payload="{ 'watt':300 }", 
-        hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
-    )
+    
+    dic_response = json.loads(msg.payload.decode('utf-8').replace("'",'"'))
+
+    print(dic_response)
+    
+    if "watt" in dic_response:
+        payload={
+            "state":dic_response["watt"],
+            }
+        response = requests.put(str(BASE+f"api/actuators/{userdata["room"]}-watt/state"), json=payload, headers=headers)
+        dic_response = json.loads(response.text)
+        print(dic_response)
+    if "set_temp" in dic_response:
+        payload={
+            "state":dic_response["set_temp"],
+            }
+        response = requests.put(str(BASE+f"api/actuators/{userdata["room"]}-set/state"), json=payload, headers=headers)
+        dic_response = json.loads(response.text)
+        print(dic_response)
 
 
 # 4. Ange broker-adress och port
@@ -103,8 +117,9 @@ def main():
     
     # 3. Initiera klienten (Viktigt: Ange CallbackAPIVersion.VERSION2 för paho-mqtt v2.x)
     userdata = {
-        "listen_topic": f"{args.level}/{args.room}/{args.type}/dec",
-        "send_topic": f"{args.level}/{args.room}/{args.type}/ac"
+        "listen_topic": f"{args.level}/{args.room}/{args.type}/ac",
+        "send_topic": f"{args.level}/{args.room}/{args.type}/sim",
+        "room": args.room
     }
     client = mqtt.Client(
         callback_api_version=CallbackAPIVersion.VERSION2,
