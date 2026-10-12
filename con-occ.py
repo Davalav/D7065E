@@ -1,5 +1,5 @@
 import argparse
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 import json
 import os
 from pathlib import Path
@@ -14,22 +14,16 @@ BASE_OCC = os.getenv("OCCUPANCY_URL", "http://127.0.0.1:8081/")
 DATA_DIR = Path(__file__).resolve().parent / "JSON files"
 REQUEST_TIMEOUT = 10
 POLL_INTERVAL_SECONDS = 0.5
-DEFAULT_OCCUPANTS_PER_LECTURE = 20
 SENSOR_TYPE = "occupancy"
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Publish lecture-based room occupancy to room sensors."
+        description="Publish occupancy-simulator room counts to room sensors."
     )
     parser.add_argument("--level", default="0")
     parser.add_argument("--room", default="A109")
     parser.add_argument("--timestep-minutes", type=float, default=5)
-    parser.add_argument(
-        "--occupants-per-lecture",
-        type=int,
-        default=DEFAULT_OCCUPANTS_PER_LECTURE,
-    )
     return parser.parse_args()
 
 
@@ -109,6 +103,26 @@ def state_time(state):
     return datetime.fromisoformat(state["sim"]["clock"]["time"])
 
 
+def room_occupancy(state, room_name, level):
+    matching_rooms = [
+        room
+        for room in state["sim"]["rooms"]
+        if room.get("name") == room_name and room.get("level") == level
+    ]
+    if len(matching_rooms) != 1:
+        raise ValueError(
+            f"Expected one occupancy-simulator entry for {room_name!r} "
+            f"on {level}, found {len(matching_rooms)}"
+        )
+    occupants = matching_rooms[0].get("occupants")
+    if isinstance(occupants, bool) or not isinstance(occupants, int) or occupants < 0:
+        raise ValueError(
+            f"Occupancy simulator returned an invalid count for "
+            f"{room_name!r} on {level}: {occupants!r}"
+        )
+    return occupants
+
+
 def wait_for_next_timestep(session, previous_time, timestep):
     interval_start = previous_time
     while True:
@@ -121,37 +135,11 @@ def wait_for_next_timestep(session, previous_time, timestep):
         sleep(POLL_INTERVAL_SECONDS)
 
 
-def lecture_occupancy(lecture_data, room_name, timestamp, occupants_per_lecture):
-    sessions = {
-        session["Session"]: session for session in lecture_data["sessions"]
-    }
-    occupants = 0
-
-    for row in lecture_data["schedule"]:
-        if row["Classroom"] != room_name or row["Day"] != timestamp.strftime("%A"):
-            continue
-
-        session = sessions[row["Session"]]
-        start = time.fromisoformat(session["StartTime"])
-        end = time.fromisoformat(session["EndTime"])
-        current_time = timestamp.time().replace(tzinfo=None)
-        active = row["Lecture"] and start <= current_time < end
-        if active:
-            occupants += occupants_per_lecture
-
-    return occupants
-
-
 def main():
     args = parse_args()
     timestep = timedelta(minutes=args.timestep_minutes)
     if timestep.total_seconds() <= 0:
         raise ValueError("Timestep must be positive")
-    if args.occupants_per_lecture < 0:
-        raise ValueError("Occupants per lecture must be non-negative")
-
-    with (DATA_DIR / "Lectures.json").open("r", encoding="utf-8") as source:
-        lecture_data = json.load(source)
     with (DATA_DIR / "rooms.json").open("r", encoding="utf-8") as source:
         configured_rooms = json.load(source)
 
@@ -175,12 +163,7 @@ def main():
             state, simulation_time = wait_for_next_timestep(
                 session, simulation_time, timestep
             )
-            occupants = lecture_occupancy(
-                lecture_data,
-                args.room,
-                simulation_time,
-                args.occupants_per_lecture,
-            )
+            occupants = room_occupancy(state, args.room, f"level{args.level}")
             api_json(
                 session,
                 "PUT",

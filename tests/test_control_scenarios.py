@@ -19,6 +19,7 @@ def load_module(module_name, filename):
 
 con_sim = load_module("con_sim", "con-sim.py")
 con_dec = load_module("con_dec", "con-dec.py")
+con_occ = load_module("con_occ", "con-occ.py")
 from control_safety import ActuatorAckMonitor, SensorHealthMonitor
 
 
@@ -56,6 +57,36 @@ def controller_state(sensor_type="temp"):
 
 
 class ControlScenarioTests(unittest.TestCase):
+    def test_occupancy_publisher_reads_count_for_matching_room_and_level(self):
+        state = {
+            "sim": {
+                "rooms": [
+                    {"name": "A109", "level": "level0", "occupants": 12},
+                    {"name": "A109", "level": "level1", "occupants": 99},
+                ]
+            }
+        }
+
+        self.assertEqual(con_occ.room_occupancy(state, "A109", "level0"), 12)
+
+    def test_occupancy_publisher_rejects_missing_room(self):
+        with self.assertRaisesRegex(ValueError, "found 0"):
+            con_occ.room_occupancy(
+                {"sim": {"rooms": []}}, "A109", "level0"
+            )
+
+    def test_occupancy_publisher_rejects_invalid_count(self):
+        state = {
+            "sim": {
+                "rooms": [
+                    {"name": "A109", "level": "level0", "occupants": -1}
+                ]
+            }
+        }
+
+        with self.assertRaisesRegex(ValueError, "invalid count"):
+            con_occ.room_occupancy(state, "A109", "level0")
+
     def test_empty_room_reaches_temperature_setpoint_at_minus_10_c(self):
         setpoint = 21.0
         controller = con_dec.PIDRegulator(
