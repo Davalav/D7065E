@@ -13,6 +13,8 @@ python sim.py Alfa --delay-seconds 0
 ## Actuator:
 python sensors.py Alfa
 
+## Lecture occupancy publisher:
+python con-occ.py
 
 ## Öppna databasen:
 sqlit connect sqlite --file-path "data.db"
@@ -43,12 +45,14 @@ En container per sak:
 ## Bättre beskrivning
 ### sim
 wait for 5 min in occ
+get time from occ
 read from buildsim
 run physics timestep
 send to sensor with noise
 
 ### occupancy sensor
 wait for 5 min in occ
+get time from occ
 read from lecture file
 publish to buildsim and occ
 

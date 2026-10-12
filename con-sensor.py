@@ -78,9 +78,14 @@ def on_message(client, userdata, msg):
     print(f"Mottaget meddelande på '{msg.topic}': {msg.payload.decode('utf-8')}")
     reading = json.loads(msg.payload.decode("utf-8"))
     sensor["value"] = str(reading["value"])
+    
+    json = {
+        "data_type": sensor["data_type"],
+        "value": reading["value"]
+    }
     response = requests.put(
         f"{BASE}api/sensors/{sensor['id']}",
-        json=sensor,
+        json=json,
         headers=headers,
     )
     response.raise_for_status()
