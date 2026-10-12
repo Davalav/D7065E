@@ -40,5 +40,33 @@ En container per sak:
 - Sensor
 
 
+## Bättre beskrivning
+### sim
+wait for 5 min in occ
+read from buildsim
+run physics timestep
+send to sensor with noise
+
+### occupancy sensor
+wait for 5 min in occ
+read from lecture file
+publish to buildsim and occ
+
+### sensor
+receive from sim
+publish
+send to decision making
+
+### decision making
+receive from sensor
+select output
+send to actuator
+
+### actuator
+receive from decision making
+publish to buildsim
+
+
+
 ## Project proposal
 https://www.overleaf.com/project/6a982a1d1d7b32586fd50cae

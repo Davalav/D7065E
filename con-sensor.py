@@ -10,6 +10,8 @@ from pathlib import Path
 import sys
 from time import sleep
 import paho.mqtt.publish as publish
+import paho.mqtt.client as mqtt
+from paho.mqtt.client import CallbackAPIVersion
 
 BASE="http://127.0.0.1:9090/"
 
@@ -59,6 +61,40 @@ def parse_args():
     return parser.parse_args()
 
 
+
+# 1. Defeniera vad som ska hända när klienten ansluter till brokern
+def on_connect(client, userdata, flags, reason_code, properties=None):
+    if reason_code == 0:
+        print("Ansluten till brokern!")
+        # Prenumerera på önskat ämne efter lyckad anslutning
+        # Ersätt "test/topic" med ditt eget ämne. Använd "#" som wildcard för alla ämnen.
+        client.subscribe(userdata["listen_topic"])
+    else:
+        print(f"Anslutning misslyckades med kod: {reason_code}")
+
+# 2. Defeniera vad som ska hända när ett nytt meddelande tas emot
+def on_message(client, userdata, msg):
+    sensor = userdata["sensor"]
+    # msg.payload kommer som bytes, använd .decode() för att göra om till text (str)
+    print(f"Mottaget meddelande på '{msg.topic}': {msg.payload.decode('utf-8')}")
+    #dic_response = json.loads(msg.payload.decode('utf-8'))
+    response = requests.put(str(BASE+f"api/sensors/{sensor["id"]}"), json=sensor, headers=headers)
+    dic_response = json.loads(response.text)
+    print(dic_response)
+    
+    publish.single(
+        topic=userdata["send_topic"], 
+        payload=str(dic_response), 
+        hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
+    )
+    print("Uppdaterar watt")
+
+
+# 4. Ange broker-adress och port
+# "localhost" för en lokal Mosquitto, eller extern IP/domän
+BROKER = "localhost" 
+PORT = 1883
+
 def main():
     args = parse_args()
     equip = equipments[args.type][0]
@@ -86,8 +122,30 @@ def main():
         payload=str(dic_response), 
         hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
     )
-    #Websocket wait for update
     
+    userdata = {
+        "send_topic": f"{args.level}/{args.room}/{args.type}/dec",
+        "listen_topic": f"{args.level}/{args.room}/{args.type}/sensor",
+        "sensor": sensor,
+    }
+    
+    client = mqtt.Client(
+        callback_api_version=CallbackAPIVersion.VERSION2,
+        userdata=userdata  # <--- HÄR skickar du med datan
+    )
+    
+    # Koppla dina funktioner till klientens callbacks
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.connect(BROKER, PORT, keepalive=60)
+    
+    # 5. Starta nätverksloopen som lyssnar efter meddelanden i bakgrunden
+    # loop_forever() blockerar programmet och körs tills du stänger av med Ctrl+C
+    try:
+        client.loop_forever()
+    except KeyboardInterrupt:
+        print("\nAvslutar...")
+        client.disconnect()    
     
     
     
