@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
   occupancysim:
     build:
-      context: ./external/occupancysim
+      context: ./../D7065E-buildsim//occupancysim
     environment:
       BUILDSIM_URL: http://buildsim:9090
       BUILDSIM_PUBLIC_URL: http://127.0.0.1:9090
