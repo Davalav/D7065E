@@ -84,7 +84,7 @@ def on_message(client, userdata, msg):
         "value": reading["value"]
     }
     response = requests.put(
-        f"{BASE}api/sensors/{sensor['id']}",
+        f"{BASE}api/sensors/{sensor['id']}/value",
         json=data,
         headers=headers,
     )

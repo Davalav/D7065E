@@ -4,6 +4,9 @@
 <!-- ./../D7065E-buildsim/buildingsim/buildsim start --port 9090 -->
 sudo docker compose up --build
 
+The occupancy simulator loads its startup parameters from `occupancy-config.json`,
+which is mounted into the service by Compose.
+
 
 
 ## Simulera Alfa:

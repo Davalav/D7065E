@@ -33,6 +33,9 @@ services:
       BUILDSIM_URL: http://buildsim:9090
       BUILDSIM_PUBLIC_URL: http://127.0.0.1:9090
       OCCUPANCY_FACTOR: "60"   # simulated seconds per real second
+      OCCUPANCY_CONFIG: /config/occupancy.json
+    volumes:
+      - ./occupancy-config.json:/config/occupancy.json
     ports:
       - "127.0.0.1:8081:8081"
     depends_on:

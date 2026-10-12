@@ -7,6 +7,7 @@ import requests
 from datetime import datetime, time, timedelta
 from pathlib import Path
 from time import sleep
+from urllib.parse import quote
 
 
 BASE="http://127.0.0.1:9090/"
@@ -109,10 +110,14 @@ def wait_for_next_timestep(session, previous_time, timestep):
         sleep(POLL_INTERVAL_SECONDS)
 
 
-def room_occupancy(session, level, room):
-    occupancy = api_json(session, "GET", BASE, "api/occupancy")
-    room_state = occupancy.get(f"level{level}/{room}", {})
-    return len(room_state.get("persons", []))
+def room_occupancy(session, room):
+    sensor_id = quote(f"{room}-occupancy", safe="")
+    path = f"api/sensors/{sensor_id}"
+    sensor = api_json(session, "GET", BASE, path)
+    occupants = int(sensor["value"])
+    if occupants < 0:
+        raise ValueError(f"Occupancy sensor for {room} returned a negative count")
+    return occupants
 
 
 def simulate_step(
@@ -252,7 +257,7 @@ def main():
                     f"api/actuators/{args.room}-watt",
                 )["state"]
             )
-            occupants = room_occupancy(session, args.level, args.room)
+            occupants = room_occupancy(session, args.room)
             outside_temperature = outside_temperature_at(weather_by_day, next_time)
             room["air_temperature"], room["mass_temperature"] = simulate_step(
                 air_temperature=room["air_temperature"],
