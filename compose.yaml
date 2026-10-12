@@ -25,6 +25,12 @@ services:
       - ./deploy/mosquitto/log:/mosquitto/log
     ports:
       - "127.0.0.1:1883:1883"
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "127.0.0.1", "-p", "1883", "-t", "healthcheck", "-m", "ok", "-q", "0"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
     restart: unless-stopped
   occupancysim:
     build:
@@ -60,7 +66,7 @@ services:
       buildsim:
         condition: service_healthy
       mosquitto:
-        condition: service_started
+        condition: service_healthy
 
     restart: unless-stopped
   sim:
@@ -82,7 +88,7 @@ services:
       hvac:
         condition: service_started
       mosquitto:
-        condition: service_started
+        condition: service_healthy
 
     restart: unless-stopped
   occ:
@@ -112,7 +118,7 @@ services:
       buildsim:
         condition: service_healthy
       mosquitto:
-        condition: service_started
+        condition: service_healthy
 
     restart: unless-stopped
   dec:
@@ -124,7 +130,7 @@ services:
       MQTT_HOST: mosquitto
     depends_on:
       mosquitto:
-        condition: service_started
+        condition: service_healthy
       sensor:
         condition: service_started
       hvac:

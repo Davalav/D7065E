@@ -53,6 +53,20 @@ equipments = {
         "data_type":"text",
         "unit":"°C",
         "value":str(default_temp)
+    }),
+    "occupancy":({
+        "id": "occupancy-",
+        "name": "Occupancy Sensor ",
+        "type": "occupancy_counter",
+        "category": "monitoring",
+    },
+    {
+        "id":"-occupancy",
+        "name":"Occupancy",
+        "type":"occupancy",
+        "data_type":"text",
+        "unit":"people",
+        "value":str(default_occ)
     })
 }
 

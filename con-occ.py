@@ -52,14 +52,24 @@ def ensure_sensor(session, room_name, floor):
     equipment_id = f"{SENSOR_TYPE}-{room_name}"
     current_sensor_id = sensor_id(room_name)
     try:
-        api_json(session, "GET", BASE, f"api/sensors/{quote(current_sensor_id, safe='')}")
+        api_json(
+            session,
+            "GET",
+            BASE,
+            f"api/sensors/{quote(current_sensor_id, safe='')}",
+        )
         return
     except requests.HTTPError as error:
         if error.response is None or error.response.status_code != 404:
             raise
 
     try:
-        api_json(session, "GET", BASE, f"api/equipment/{quote(equipment_id, safe='')}")
+        api_json(
+            session,
+            "GET",
+            BASE,
+            f"api/equipment/{quote(equipment_id, safe='')}",
+        )
     except requests.HTTPError as error:
         if error.response is None or error.response.status_code != 404:
             raise
