@@ -172,8 +172,11 @@ services:
     command: ["python", "-u", "con-dec.py"]
     environment:
       MQTT_HOST: mosquitto
+      OCCUPANCY_URL: http://occupancysim:8081
     depends_on:
       mosquitto:
+        condition: service_healthy
+      occupancysim:
         condition: service_healthy
       sensor:
         condition: service_started

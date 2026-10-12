@@ -3,15 +3,19 @@ import json
 import logging
 import os
 import time
+from datetime import datetime
 
 import paho.mqtt.client as mqtt
+import requests
 from paho.mqtt.client import CallbackAPIVersion
 
 
 CONNECT_RETRY_SECONDS = 2
 BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
+OCCUPANCY_URL = os.getenv("OCCUPANCY_URL", "http://127.0.0.1:8081").rstrip("/")
 DEFAULT_SET_TEMP = 21
+DEFAULT_NIGHT_SET_TEMP = 17
 
 
 def parse_args():
@@ -72,14 +76,37 @@ class PIDRegulator:
         return min(self.max_output, max(0.0, output))
 
 
+def current_setpoint():
+    response = requests.get(f"{OCCUPANCY_URL}/api/state", timeout=5)
+    response.raise_for_status()
+    clock_time = datetime.fromisoformat(
+        response.json()["sim"]["clock"]["time"]
+    ).hour
+    if clock_time >= 18 or clock_time < 6:
+        return DEFAULT_NIGHT_SET_TEMP
+    return DEFAULT_SET_TEMP
+
+
+def update_setpoint(client, userdata, force=False):
+    setpoint = current_setpoint()
+    regulator = userdata["regulator"]
+    if force or regulator.setpoint != setpoint:
+        regulator.setpoint = setpoint
+        client.publish(
+            userdata["send_topic"],
+            json.dumps({"set_temp": str(setpoint)}),
+        )
+        logging.info("Setpoint changed to %s °C", setpoint)
+
+
 def on_connect(client, userdata, flags, reason_code, properties=None):
     if reason_code == 0:
         print("Ansluten till brokern!")
         client.subscribe(userdata["listen_topic"])
-        client.publish(
-            userdata["send_topic"],
-            json.dumps({"set_temp": str(userdata["regulator"].setpoint)}),
-        )
+        try:
+            update_setpoint(client, userdata, force=True)
+        except (requests.RequestException, KeyError, TypeError, ValueError):
+            logging.exception("Could not read occupancy simulator time for setpoint")
     else:
         print(f"Anslutning misslyckades med kod: {reason_code}")
 
@@ -91,6 +118,12 @@ def on_message(client, userdata, msg):
         measured_temperature = float(reading["value"])
     except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError):
         logging.exception("Ignoring invalid temperature reading")
+        return
+
+    try:
+        update_setpoint(client, userdata)
+    except (requests.RequestException, KeyError, TypeError, ValueError):
+        logging.exception("Ignoring temperature reading because simulated time is unavailable")
         return
 
     wattage = userdata["regulator"].update(measured_temperature)
