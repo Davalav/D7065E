@@ -75,19 +75,23 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
 # 2. Defeniera vad som ska hända när ett nytt meddelande tas emot
 def on_message(client, userdata, msg):
     sensor = userdata["sensor"]
-    # msg.payload kommer som bytes, använd .decode() för att göra om till text (str)
     print(f"Mottaget meddelande på '{msg.topic}': {msg.payload.decode('utf-8')}")
-    #dic_response = json.loads(msg.payload.decode('utf-8'))
-    response = requests.put(str(BASE+f"api/sensors/{sensor["id"]}"), json=sensor, headers=headers)
-    dic_response = json.loads(response.text)
-    print(dic_response)
+    reading = json.loads(msg.payload.decode("utf-8"))
+    sensor["value"] = str(reading["value"])
+    response = requests.put(
+        f"{BASE}api/sensors/{sensor['id']}",
+        json=sensor,
+        headers=headers,
+    )
+    response.raise_for_status()
+    sensor_response = response.json()
     
     publish.single(
         topic=userdata["send_topic"], 
-        payload=str(dic_response), 
+        payload=json.dumps(sensor_response),
         hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
     )
-    print("Uppdaterar watt")
+    print(f"Updated sensor {sensor['id']} to {sensor['value']}")
 
 
 # 4. Ange broker-adress och port
