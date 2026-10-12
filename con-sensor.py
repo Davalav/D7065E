@@ -92,11 +92,10 @@ def on_message(client, userdata, msg):
         headers=headers,
     )
     response.raise_for_status()
-    sensor_response = response.json()
     
     publish.single(
         topic=userdata["send_topic"], 
-        payload=json.dumps(sensor_response),
+        payload=json.dumps({"value": sensor["value"]}),
         hostname=BROKER, # Du kan byta ut denna mot din egen broker-IP/host
         port=PORT
     )
@@ -132,7 +131,7 @@ def main():
     print(dic_response)
     publish.single(
         topic=f"{args.level}/{args.room}/{args.type}/dec", 
-        payload=str(dic_response), 
+        payload=json.dumps(dic_response),
         hostname=BROKER,
         port=PORT
     )
