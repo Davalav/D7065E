@@ -5,6 +5,7 @@ from paho.mqtt.client import CallbackAPIVersion
 import argparse
 import paho.mqtt.publish as publish
 import json
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description="One Decision maker")
@@ -41,7 +42,7 @@ def on_message(client, userdata, msg):
 
 # 4. Ange broker-adress och port
 # "localhost" för en lokal Mosquitto, eller extern IP/domän
-BROKER = "localhost" 
+BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
 
 default_set_temp=21
@@ -60,7 +61,8 @@ def main():
     publish.single(
         topic=userdata["send_topic"],
         payload=payload,
-        hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
+        hostname=BROKER,
+        port=PORT,
     )
     
     # 3. Initiera klienten (Viktigt: Ange CallbackAPIVersion.VERSION2 för paho-mqtt v2.x)

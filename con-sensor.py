@@ -1,6 +1,7 @@
 # EN(1) sensor
 import requests
 import json
+import os
 import sys
 import time
 import argparse
@@ -13,9 +14,8 @@ import paho.mqtt.publish as publish
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import CallbackAPIVersion
 
-#BASE="http://127.0.0.1:9090/"
-BASE = "http://buildsim:9090/"
-BROKER = "mosquitto"
+BASE = os.getenv("BUILDSIM_URL", "http://127.0.0.1:9090/")
+BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
 
 headers = {'Content-Type': 'application/json'}

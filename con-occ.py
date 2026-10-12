@@ -1,6 +1,7 @@
 import argparse
 from datetime import datetime, time, timedelta
 import json
+import os
 from pathlib import Path
 from time import sleep
 from urllib.parse import quote
@@ -8,10 +9,8 @@ from urllib.parse import quote
 import requests
 
 
-#BASE = "http://127.0.0.1:9090/"
-#BASE_OCC = "http://127.0.0.1:8081/"
-BASE = "http://buildsim:9090/"
-BASE_OCC = "http://occupancysim:8081/"
+BASE = os.getenv("BUILDSIM_URL", "http://127.0.0.1:9090/")
+BASE_OCC = os.getenv("OCCUPANCY_URL", "http://127.0.0.1:8081/")
 DATA_DIR = Path(__file__).resolve().parent / "JSON files"
 REQUEST_TIMEOUT = 10
 POLL_INTERVAL_SECONDS = 0.5

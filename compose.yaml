@@ -52,9 +52,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.python
-
     command: ["python", "-u", "con-hvac.py"]
-
+    environment:
+      BUILDSIM_URL: http://buildsim:9090/
+      MQTT_HOST: mosquitto
     depends_on:
       buildsim:
         condition: service_healthy
@@ -66,12 +67,20 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.python
-
     command: ["python", "-u", "con-sim.py"]
-
+    environment:
+      BUILDSIM_URL: http://buildsim:9090/
+      OCCUPANCY_URL: http://occupancysim:8081/
+      MQTT_HOST: mosquitto
     depends_on:
       buildsim:
         condition: service_healthy
+      occupancysim:
+        condition: service_healthy
+      sensor:
+        condition: service_started
+      hvac:
+        condition: service_started
       mosquitto:
         condition: service_started
 
@@ -80,9 +89,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.python
-
     command: ["python", "-u", "con-occ.py"]
-
+    environment:
+      BUILDSIM_URL: http://buildsim:9090/
+      OCCUPANCY_URL: http://occupancysim:8081/
     depends_on:
       buildsim:
         condition: service_healthy
@@ -94,13 +104,29 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.python
-
     command: ["python", "-u", "con-sensor.py"]
-
+    environment:
+      BUILDSIM_URL: http://buildsim:9090/
+      MQTT_HOST: mosquitto
     depends_on:
       buildsim:
         condition: service_healthy
       mosquitto:
         condition: service_started
 
+    restart: unless-stopped
+  dec:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    command: ["python", "-u", "con-dec.py"]
+    environment:
+      MQTT_HOST: mosquitto
+    depends_on:
+      mosquitto:
+        condition: service_started
+      sensor:
+        condition: service_started
+      hvac:
+        condition: service_started
     restart: unless-stopped

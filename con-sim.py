@@ -2,6 +2,7 @@
 import argparse
 import paho.mqtt.publish as publish
 import json
+import os
 import random
 import requests
 from datetime import datetime, time, timedelta
@@ -10,10 +11,8 @@ from time import sleep
 from urllib.parse import quote
 
 
-#BASE="http://127.0.0.1:9090/"
-#BASE_OCC="http://127.0.0.1:8081/"
-BASE = "http://buildsim:9090/"
-BASE_OCC = "http://occupancysim:8081/"
+BASE = os.getenv("BUILDSIM_URL", "http://127.0.0.1:9090/")
+BASE_OCC = os.getenv("OCCUPANCY_URL", "http://127.0.0.1:8081/")
 
 
 default_set_temp=21
@@ -189,7 +188,7 @@ def simulate_step(
     return air_temperature, mass_temperature
 
 
-BROKER = "localhost" 
+BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
     
 def main():

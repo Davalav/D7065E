@@ -6,11 +6,11 @@ import argparse
 import paho.mqtt.publish as publish
 import json
 import requests
+import os
 
 
-#BASE="http://127.0.0.1:9090/"
-BASE = "http://buildsim:9090/"
-BROKER = "mosquitto"
+BASE = os.getenv("BUILDSIM_URL", "http://127.0.0.1:9090/")
+BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
 
 headers = {'Content-Type': 'application/json'}
