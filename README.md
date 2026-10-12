@@ -1,8 +1,15 @@
 # D7065E
 
-## Starta Buildsim (från D7065E-code):
+## Starta hela simuleringen (från D7065E-code):
 <!-- ./../D7065E-buildsim/buildingsim/buildsim start --port 9090 -->
-sudo docker compose up --build
+`compose.yaml` contains shared infrastructure and `services-compose.yaml`
+contains the `con-*` services generated for every room in `JSON files/rooms.json`.
+Regenerate the room services after changing that list with
+`python yaml_generate.py`, then start everything with:
+
+```sh
+sudo docker compose -f compose.yaml -f services-compose.yaml up --build
+```
 
 The occupancy simulator loads its startup parameters from `occupancy-config.json`,
 which is mounted into the service by Compose.
@@ -24,9 +31,10 @@ Prometheus uses temporary storage, so collected values are cleared whenever
 its container is restarted. Grafana configuration remains in the
 `grafana-data` volume.
 
-Compose also starts a CO₂ sensor, PID controller, and ventilation actuator for
-room A109. The room simulation models occupant CO₂ generation and ventilation
-with outdoor air at 420 ppm; the controller targets 900 ppm and adjusts
+Each configured room receives its own temperature and CO₂ sensors, occupancy
+publisher, HVAC and ventilation actuators, PID controllers, and physics
+simulation. The room simulation models occupant CO₂ generation and ventilation
+with outdoor air at 420 ppm; each CO₂ controller targets 900 ppm and adjusts
 ventilation between 0 and 600 watt-equivalent units (mapped to 0–3 air changes
 per hour). Grafana shows that command separately from HVAC power consumption.
 
@@ -46,14 +54,14 @@ python sim.py Alfa --delay-seconds 0
 ## Actuator:
 python sensors.py Alfa
 
-## Lecture occupancy sensor:
+## Occupancy sensor:
 python con-occ.py
 
 ## Öppna databasen:
 sqlit connect sqlite --file-path "data.db"
 
 ## Stäng
-sudo docker compose down
+docker compose -f compose.yaml -f services-compose.yaml down
 
 ## TODO
 - Containerize(Dela upp i separata containers

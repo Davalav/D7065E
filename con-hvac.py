@@ -139,9 +139,9 @@ def main():
     
     # 3. Initiera klienten (Viktigt: Ange CallbackAPIVersion.VERSION2 för paho-mqtt v2.x)
     userdata = {
-        "listen_topic": f"{args.level}/{args.room}/{args.type}/ac",
-        "send_topic": f"{args.level}/{args.room}/{args.type}/sim",
-        "ack_topic": f"{args.level}/{args.room}/{args.type}/actuator-status",
+        "listen_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/ac",
+        "send_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/sim",
+        "ack_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/actuator-status",
         "room": args.room
     }
     client = mqtt.Client(

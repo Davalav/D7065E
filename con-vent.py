@@ -119,8 +119,8 @@ def main():
     ensure_ventilator(session, args.level, args.room)
 
     userdata = {
-        "listen_topic": f"{args.level}/{args.room}/{args.type}/ac",
-        "ack_topic": f"{args.level}/{args.room}/{args.type}/actuator-status",
+        "listen_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/ac",
+        "ack_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/actuator-status",
         "actuator_id": f"{args.room}-vent",
     }
     client = mqtt.Client(

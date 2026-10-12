@@ -4,6 +4,7 @@ import logging
 import os
 import time
 from datetime import datetime
+from urllib.parse import quote
 
 import paho.mqtt.client as mqtt
 import requests
@@ -237,9 +238,9 @@ def main():
         reverse_action=args.type == "co2",
     )
     userdata = {
-        "listen_topic": f"{args.level}/{args.room}/{args.type}/dec",
-        "send_topic": f"{args.level}/{args.room}/{args.type}/ac",
-        "ack_topic": f"{args.level}/{args.room}/{args.type}/actuator-status",
+        "listen_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/dec",
+        "send_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/ac",
+        "ack_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/actuator-status",
         "regulator": regulator,
         "sensor_type": args.type,
         "configured_setpoint": args.setpoint,

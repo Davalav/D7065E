@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 import sys
 from time import sleep
+from urllib.parse import quote
 import paho.mqtt.publish as publish
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import CallbackAPIVersion
@@ -129,15 +130,15 @@ def main():
     dic_response = json.loads(response.text)
     print(dic_response)
     publish.single(
-        topic=f"{args.level}/{args.room}/{args.type}/dec", 
+        topic=f"{args.level}/{quote(args.room, safe='')}/{args.type}/dec",
         payload=json.dumps(dic_response),
         hostname=BROKER,
         port=PORT
     )
     
     userdata = {
-        "send_topic": f"{args.level}/{args.room}/{args.type}/dec",
-        "listen_topic": f"{args.level}/{args.room}/{args.type}/sensor",
+        "send_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/dec",
+        "listen_topic": f"{args.level}/{quote(args.room, safe='')}/{args.type}/sensor",
         "sensor": sensor,
     }
     

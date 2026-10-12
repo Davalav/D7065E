@@ -319,8 +319,9 @@ def main():
         f"{args.room} occupancy sensor",
     )
 
-    temperature_topic = f"{args.level}/{args.room}/temp/sensor"
-    co2_topic = f"{args.level}/{args.room}/co2/sensor"
+    topic_room = quote(args.room, safe="")
+    temperature_topic = f"{args.level}/{topic_room}/temp/sensor"
+    co2_topic = f"{args.level}/{topic_room}/co2/sensor"
     simulation_time = state_time(api_json(session, "GET", BASE_OCC, "api/state"))
     print(f"Waiting for {timestep} of occupancy-simulation time")
     try:
