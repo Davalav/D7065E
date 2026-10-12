@@ -13,6 +13,8 @@ python sim.py Alfa --delay-seconds 0
 ## Actuator:
 python sensors.py Alfa
 
+## Lecture occupancy publisher:
+python con-occ.py
 
 ## Öppna databasen:
 sqlit connect sqlite --file-path "data.db"
@@ -38,6 +40,36 @@ En container per sak:
 - Actuator ->
 - Simulation ->
 - Sensor
+
+
+## Bättre beskrivning
+### sim
+wait for 5 min in occ
+get time from occ
+read from buildsim
+run physics timestep
+send to sensor with noise
+
+### occupancy sensor
+wait for 5 min in occ
+get time from occ
+read from lecture file
+publish to buildsim and occ
+
+### sensor
+receive from sim
+publish
+send to decision making
+
+### decision making
+receive from sensor
+select output
+send to actuator
+
+### actuator
+receive from decision making
+publish to buildsim
+
 
 
 ## Project proposal
