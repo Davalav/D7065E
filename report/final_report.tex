@@ -15,7 +15,7 @@
 \usepackage{xurl}
 \usepackage{bookmark}
 \hypersetup{
-  pdftitle={Room Climate Control, Architecture Document},
+  pdftitle={Energy Consumption Regulator With HVAC Systems, Architecture Document},
   pdfauthor={David Sämfors and Gustav Juul},
   colorlinks=true,
   linkcolor={RoyalBlue},
@@ -57,7 +57,7 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}\fancyhf{}
 \rhead{\small D7065E\,--\,Architecture Document}
-\lhead{\small Room Climate Control}
+\lhead{\small Energy Consumption Regulator With HVAC Systems}
 \cfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \usepackage{titlesec}
@@ -85,7 +85,7 @@
 \begin{document}
 
 \begin{center}
-{\LARGE Room Climate Control on BuildSim\par}
+{\LARGE Energy Consumption Regulator With HVAC Systems\par}
 \vspace{0.5em}
 {\large D7065E, Architecture Document\par}
 \vspace{1em}
@@ -111,7 +111,7 @@ modelled in BuildSim, using one temperature loop and one CO₂ loop per room.
 People come from the course occupancy simulator; this project contributes the
 room physics (a two-node heat balance and a CO₂ mass balance), emulated sensor and
 actuator devices, a decision maker with fault handling, and a monitoring
-dashboard. Five adjacent lecture rooms (A107–A111, 61–94 seats each) are
+dashboard. Five adjacent lecture rooms (A107–A111) are
 controlled; which rooms are controlled is one flag per room in a configuration
 file. The guiding principle is that \textbf{a device is a container, but a
 computation is not}: everything that would be a separate physical device in a
@@ -127,7 +127,7 @@ That principle came out of a failure, and it threads through Sections 4, 9 and 1
 \textbf{Field} & \textbf{Value} \\
 \midrule
 \endhead
-\textbf{Project title} & Room Climate Control on BuildSim \\
+\textbf{Project title} & Energy Consumption Regulator With HVAC Systems \\
 \textbf{Team members} & David Sämfors, Gustav Juul \\
 \textbf{Use case} & Thermal comfort and indoor air quality in lecture rooms, with a night setback for energy \\
 \textbf{Repository} & \url{https://github.com/Davalav/D7065E} \\
@@ -135,7 +135,16 @@ That principle came out of a failure, and it threads through Sections 4, 9 and 1
 \bottomrule
 \end{longtable}
 
-\textbf{Changes since the proposal.} The design changed five times, each time
+\textbf{Changes since the proposal.} We chose to use occupancy simulation instead of webscraped TimeEdit data. 
+Reasoning behind that is because we didn't know about occupancy simulation while writing the proposal.
+
+We didn't use a inbuilt dashboard in BuildSim, because we didn't have enough time to develop a dashboard 
+that would be able to show all the data we wanted to show.
+
+Since we decided to use occuopancy sim, instead of TimeEdit, we also didn't have a schedule to prepare the HVAC system on.
+Because of this it became more of a reactive regulator, instead of a predictive regulator.
+
+\textbf{Changes throughout the project} The design changed five times, each time
 because something we built or measured forced it:
 
 \begin{enumerate}
