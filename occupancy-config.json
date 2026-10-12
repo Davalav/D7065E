@@ -1,6 +1,6 @@
 {
   "seed": 7,
-  "weekday_population": 0,
+  "weekday_population": 100,
   "weekend_fraction": 0.1,
   "night_guards": 3,
   "student_share": 0.6,
@@ -32,20 +32,9 @@
   "fika_min_m2": 100,
   "fika_room_count": 3,
   "room_roles": {
-    "A105": "unused",
     "A1123": "unused"
   },
   "entrances": [
-    {
-      "name": "Main entrance (north), hall A1016",
-      "level": "level0",
-      "position": [175, 2]
-    },
-    {
-      "name": "East entrance, foyer A1123",
-      "level": "level0",
-      "position": [345, 176]
-    },
     {
       "name": "North-east entrance, vestibule A105",
       "level": "level0",
@@ -55,21 +44,6 @@
       "name": "South entrance, vestibule A10",
       "level": "level0",
       "position": [230, 345]
-    },
-    {
-      "name": "North-east corner, corridor A1000A",
-      "level": "level0",
-      "position": [360, 25]
-    },
-    {
-      "name": "North-west corner, corridor A1000E",
-      "level": "level0",
-      "position": [3, 28]
-    },
-    {
-      "name": "South-west entrance, corridor A170",
-      "level": "level0",
-      "position": [124, 333]
     }
   ],
   "walking_speed_mps": 1.3,
