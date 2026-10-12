@@ -44,7 +44,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 24,
+        "w": 18,
         "x": 0,
         "y": 0
       },
@@ -69,6 +69,52 @@
       ],
       "title": "Outside temperature",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dateTimeAsIso",
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "building_occupancy_sim_time_seconds * 1000",
+          "legendFormat": "Occupancy sim time",
+          "refId": "A"
+        }
+      ],
+      "title": "Occupancy simulation clock (UTC)",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -361,6 +407,6 @@
   "timezone": "browser",
   "title": "Building simulation",
   "uid": "building-simulation",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

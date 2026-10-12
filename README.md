@@ -16,8 +16,12 @@ outside temperature and BuildSim room power, temperature, setpoint, CO₂, and
 occupancy readings. The room selector filters the room panels; a metric is
 shown when its corresponding sensor or actuator is present in BuildSim.
 
-Prometheus is also available at http://localhost:9091. Dashboard history is
-stored in the `grafana-data` and `prometheus-data` Compose volumes.
+Prometheus is also available at http://localhost:9091. Graph samples use
+system-time scrape timestamps so Grafana's time picker can display them; the
+dashboard separately shows the current occupancy simulator clock in UTC.
+Prometheus uses temporary storage, so collected values are cleared whenever
+its container is restarted. Grafana configuration remains in the
+`grafana-data` volume.
 
 
 ## Simulera Alfa:

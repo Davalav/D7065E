@@ -128,7 +128,8 @@ services:
       - "--storage.tsdb.path=/prometheus"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
+    tmpfs:
+      - /prometheus:rw,noexec,nosuid,uid=65534,gid=65534,mode=0770
     ports:
       - "127.0.0.1:9091:9090"
     depends_on:
@@ -184,5 +185,4 @@ services:
         condition: service_started
     restart: unless-stopped
 volumes:
-  prometheus-data:
   grafana-data:

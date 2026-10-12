@@ -17,6 +17,7 @@ WEATHER_PATH = DATA_DIR / "Weather.json"
 
 METRIC_INFO = (
     ("building_outside_temperature_celsius", "Outside air temperature in Celsius."),
+    ("building_occupancy_sim_time_seconds", "Occupancy simulator clock as Unix time in seconds."),
     ("room_power_consumption_watts", "Room HVAC actuator power setting in watts."),
     ("room_temperature_celsius", "Room temperature sensor reading in Celsius."),
     ("room_set_temperature_celsius", "Room HVAC temperature setpoint in Celsius."),
@@ -67,11 +68,15 @@ def outside_temperature_at(weather, timestamp):
 
 
 def metric_samples(equipment, clock, weather):
-    values = {"building_outside_temperature_celsius": []}
+    values = {
+        "building_outside_temperature_celsius": [],
+        "building_occupancy_sim_time_seconds": [],
+    }
     timestamp = datetime.fromisoformat(clock["time"])
     values["building_outside_temperature_celsius"].append(
         ((), outside_temperature_at(weather, timestamp))
     )
+    values["building_occupancy_sim_time_seconds"].append(((), timestamp.timestamp()))
 
     for item in equipment:
         room = item.get("room")
