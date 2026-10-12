@@ -32,7 +32,7 @@ def parse_args():
 
 
 class PIDRegulator:
-    def __init__(self, setpoint, kp, ki, kd, max_output):
+    def __init__(self, setpoint, kp, ki, kd, max_output, reverse_action=False):
         if max_output <= 0:
             raise ValueError("Maximum wattage must be positive")
         if min(kp, ki, kd) < 0:
@@ -42,20 +42,25 @@ class PIDRegulator:
         self.ki = ki
         self.kd = kd
         self.max_output = max_output
+        self.error_direction = 1.0 if reverse_action else -1.0
         self.integral = 0.0
         self.last_time = None
         self.last_measurement = None
 
     def update(self, measurement, now=None):
         now = time.monotonic() if now is None else now
-        error = self.setpoint - measurement
+        error = (measurement - self.setpoint) * self.error_direction
         if self.last_time is None:
             self.last_time = now
             self.last_measurement = measurement
             return min(self.max_output, max(0.0, self.kp * error))
 
         elapsed = max(now - self.last_time, 1e-6)
-        derivative = -(measurement - self.last_measurement) / elapsed
+        derivative = (
+            (measurement - self.last_measurement)
+            * self.error_direction
+            / elapsed
+        )
         candidate_integral = self.integral + error * elapsed
         proportional = self.kp * error
         derivative_term = self.kd * derivative
@@ -87,16 +92,23 @@ def current_setpoint():
     return DEFAULT_SET_TEMP
 
 
+def configured_setpoint(userdata):
+    if userdata["sensor_type"] == "temp":
+        return current_setpoint()
+    return userdata["configured_setpoint"]
+
+
 def update_setpoint(client, userdata, force=False):
-    setpoint = current_setpoint()
+    setpoint = configured_setpoint(userdata)
     regulator = userdata["regulator"]
     if force or regulator.setpoint != setpoint:
         regulator.setpoint = setpoint
-        client.publish(
-            userdata["send_topic"],
-            json.dumps({"set_temp": str(setpoint)}),
-        )
-        logging.info("Setpoint changed to %s °C", setpoint)
+        if userdata["sensor_type"] == "temp":
+            client.publish(
+                userdata["send_topic"],
+                json.dumps({"set_temp": str(setpoint)}),
+            )
+        logging.info("Setpoint changed to %s for %s", setpoint, userdata["sensor_type"])
 
 
 def on_connect(client, userdata, flags, reason_code, properties=None):
@@ -115,23 +127,23 @@ def on_message(client, userdata, msg):
     print(f"Mottaget meddelande på '{msg.topic}': {msg.payload.decode('utf-8')}")
     try:
         reading = json.loads(msg.payload.decode("utf-8"))
-        measured_temperature = float(reading["value"])
+        measured_value = float(reading["value"])
     except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError):
-        logging.exception("Ignoring invalid temperature reading")
+        logging.exception("Ignoring invalid %s reading", userdata["sensor_type"])
         return
 
     try:
         update_setpoint(client, userdata)
     except (requests.RequestException, KeyError, TypeError, ValueError):
-        logging.exception("Ignoring temperature reading because simulated time is unavailable")
+        logging.exception("Ignoring reading because setpoint is unavailable")
         return
 
-    wattage = userdata["regulator"].update(measured_temperature)
+    wattage = userdata["regulator"].update(measured_value)
     client.publish(
         userdata["send_topic"],
         json.dumps({"watt": str(round(wattage, 2))}),
     )
-    print(f"PID: {measured_temperature:.2f} °C -> {wattage:.2f} W")
+    print(f"PID: {measured_value:.2f} -> {wattage:.2f} W")
 
 
 def main():
@@ -146,11 +158,14 @@ def main():
         ki=args.ki,
         kd=args.kd,
         max_output=args.max_watts,
+        reverse_action=args.type == "co2",
     )
     userdata = {
         "listen_topic": f"{args.level}/{args.room}/{args.type}/dec",
         "send_topic": f"{args.level}/{args.room}/{args.type}/ac",
         "regulator": regulator,
+        "sensor_type": args.type,
+        "configured_setpoint": args.setpoint,
     }
 
     client = mqtt.Client(

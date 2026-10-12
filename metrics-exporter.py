@@ -21,6 +21,7 @@ METRIC_INFO = (
     ("building_outside_temperature_celsius", "Outside air temperature in Celsius."),
     ("building_occupancy_sim_time_seconds", "Occupancy simulator clock as Unix time in seconds."),
     ("room_power_consumption_watts", "Room HVAC actuator power setting in watts."),
+    ("room_ventilation_command_watts", "Ventilation control command in watt-equivalent units."),
     ("room_temperature_celsius", "Room temperature sensor reading in Celsius."),
     ("room_set_temperature_celsius", "Room HVAC temperature setpoint in Celsius."),
     ("room_co2_ppm", "Room carbon dioxide sensor reading in parts per million."),
@@ -110,6 +111,7 @@ def metric_samples(equipment, clock, weather):
             metric_name = {
                 "wattage": "room_power_consumption_watts",
                 "setpoint": "room_set_temperature_celsius",
+                "ventilation": "room_ventilation_command_watts",
             }.get(actuator.get("type"))
             if metric_name is None:
                 continue

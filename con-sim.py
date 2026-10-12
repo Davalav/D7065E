@@ -2,6 +2,8 @@
 import argparse
 import paho.mqtt.publish as publish
 import json
+import logging
+import math
 import os
 import random
 import requests
@@ -28,6 +30,10 @@ VENTILATION_AIR_CHANGES_PER_HOUR = 0.5
 THERMAL_MASS_CAPACITY_J_PER_M2_K = 165_000.0
 AIR_MASS_COUPLING_W_PER_M2_K = 8.0
 SENSIBLE_HEAT_PER_OCCUPANT_W = 75.0
+OUTDOOR_CO2_PPM = 420.0
+CO2_GENERATION_M3_PER_SECOND_PER_PERSON = 0.005 / 1000
+MAX_VENTILATION_WATTS = 600.0
+MAX_VENTILATION_AIR_CHANGES_PER_HOUR = 3.0
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Simulate room temperatures.")
@@ -36,6 +42,7 @@ def parse_args():
     parser.add_argument("--timestep-minutes", type=float, default=5)
     parser.add_argument("--temperature", type=float, default=25)
     parser.add_argument("--noise-stddev", type=float, default=0.2)
+    parser.add_argument("--co2-noise-stddev", type=float, default=10.0)
     return parser.parse_args()
 
 
@@ -47,6 +54,15 @@ def api_json(session, method, base_url, path):
     )
     response.raise_for_status()
     return response.json()
+
+
+def wait_for_api_json(session, path, description):
+    while True:
+        try:
+            return api_json(session, "GET", BASE, path)
+        except requests.RequestException as error:
+            logging.warning("Waiting for %s: %s", description, error)
+            sleep(POLL_INTERVAL_SECONDS)
 
 
 def load_json(path):
@@ -188,16 +204,55 @@ def simulate_step(
     return air_temperature, mass_temperature
 
 
+def simulate_co2_step(
+    co2_ppm,
+    occupants,
+    ventilation_watts,
+    room_volume_m3,
+    duration_seconds,
+):
+    if room_volume_m3 <= 0 or duration_seconds <= 0:
+        raise ValueError("Room volume and timestep duration must be positive")
+    if occupants < 0 or ventilation_watts < 0:
+        raise ValueError("Occupants and ventilation power must be non-negative")
+
+    ventilation_fraction = min(ventilation_watts / MAX_VENTILATION_WATTS, 1.0)
+    air_changes_per_hour = (
+        ventilation_fraction * MAX_VENTILATION_AIR_CHANGES_PER_HOUR
+    )
+    air_exchange_rate = air_changes_per_hour / 3600
+    co2_generation_ppm_per_second = (
+        occupants
+        * CO2_GENERATION_M3_PER_SECOND_PER_PERSON
+        / room_volume_m3
+        * 1_000_000
+    )
+
+    if air_exchange_rate == 0:
+        return co2_ppm + co2_generation_ppm_per_second * duration_seconds
+
+    equilibrium_ppm = (
+        OUTDOOR_CO2_PPM
+        + co2_generation_ppm_per_second / air_exchange_rate
+    )
+    return equilibrium_ppm + (co2_ppm - equilibrium_ppm) * math.exp(
+        -air_exchange_rate * duration_seconds
+    )
+
+
 BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
     
 def main():
+    logging.basicConfig(level=logging.INFO)
     args = parse_args()
     timestep = timedelta(minutes=args.timestep_minutes)
     if timestep.total_seconds() <= 0:
         raise ValueError("Timestep must be positive")
     if args.noise_stddev < 0:
         raise ValueError("Noise standard deviation must be non-negative")
+    if args.co2_noise_stddev < 0:
+        raise ValueError("CO2 noise standard deviation must be non-negative")
 
     weather_data = load_json(DATA_DIR / "Weather.json")
     room_data = load_json(DATA_DIR / "rooms.json")
@@ -234,13 +289,38 @@ def main():
         "air_temperature": args.temperature,
         "mass_temperature": args.temperature,
     }
-    sensor = api_json(
-        session, "GET", BASE, f"api/sensors/{args.room}-temp"
+    sensor = wait_for_api_json(
+        session,
+        f"api/sensors/{quote(f'{args.room}-temp', safe='')}",
+        f"{args.room} temperature sensor",
     )
     room["air_temperature"] = float(sensor["value"])
     room["mass_temperature"] = room["air_temperature"]
 
-    topic = f"{args.level}/{args.room}/temp/sensor"
+    co2_sensor = wait_for_api_json(
+        session,
+        f"api/sensors/{quote(f'{args.room}-co2', safe='')}",
+        f"{args.room} CO2 sensor",
+    )
+    co2_ppm = max(OUTDOOR_CO2_PPM, float(co2_sensor["value"]))
+    wait_for_api_json(
+        session,
+        f"api/actuators/{quote(f'{args.room}-watt', safe='')}",
+        f"{args.room} HVAC actuator",
+    )
+    wait_for_api_json(
+        session,
+        f"api/actuators/{quote(f'{args.room}-vent', safe='')}",
+        f"{args.room} ventilation actuator",
+    )
+    wait_for_api_json(
+        session,
+        f"api/sensors/{quote(f'{args.room}-occupancy', safe='')}",
+        f"{args.room} occupancy sensor",
+    )
+
+    temperature_topic = f"{args.level}/{args.room}/temp/sensor"
+    co2_topic = f"{args.level}/{args.room}/co2/sensor"
     simulation_time = state_time(api_json(session, "GET", BASE_OCC, "api/state"))
     print(f"Waiting for {timestep} of occupancy-simulation time")
     try:
@@ -257,6 +337,14 @@ def main():
                     "GET",
                     BASE,
                     f"api/actuators/{args.room}-watt",
+                )["state"]
+            )
+            ventilation_wattage = float(
+                api_json(
+                    session,
+                    "GET",
+                    BASE,
+                    f"api/actuators/{args.room}-vent",
                 )["state"]
             )
             occupants = room_occupancy(session, args.room)
@@ -277,15 +365,33 @@ def main():
             noisy_temperature = room["air_temperature"] + random.gauss(
                 0, args.noise_stddev
             )
+            co2_ppm = simulate_co2_step(
+                co2_ppm=co2_ppm,
+                occupants=occupants,
+                ventilation_watts=ventilation_wattage,
+                room_volume_m3=room["area"] * ROOM_HEIGHT_METERS,
+                duration_seconds=duration_seconds,
+            )
+            noisy_co2 = max(
+                OUTDOOR_CO2_PPM,
+                co2_ppm + random.gauss(0, args.co2_noise_stddev),
+            )
             publish.single(
-                topic=topic,
+                topic=temperature_topic,
                 payload=json.dumps({"value": str(round(noisy_temperature, 2))}),
+                hostname=BROKER,
+                port=PORT,
+            )
+            publish.single(
+                topic=co2_topic,
+                payload=json.dumps({"value": str(round(noisy_co2, 1))}),
                 hostname=BROKER,
                 port=PORT,
             )
             print(
                 f"{next_time.isoformat()} | {occupants} occupants | "
-                f"{wattage:.0f} W | {noisy_temperature:.2f} °C"
+                f"{wattage:.0f} W HVAC | {ventilation_wattage:.0f} W vent | "
+                f"{noisy_temperature:.2f} °C | {noisy_co2:.1f} ppm CO2"
             )
     except KeyboardInterrupt:
         print("\nStopping simulation.")

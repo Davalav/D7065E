@@ -20,7 +20,7 @@ PORT = 1883
 
 headers = {'Content-Type': 'application/json'}
 default_temp=18
-default_co2=400
+default_co2=420
 
 
 equipments = {

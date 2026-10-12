@@ -24,6 +24,11 @@ Prometheus uses temporary storage, so collected values are cleared whenever
 its container is restarted. Grafana configuration remains in the
 `grafana-data` volume.
 
+Compose also starts a CO₂ sensor, PID controller, and ventilation actuator for
+room A109. The room simulation models occupant CO₂ generation and ventilation
+with outdoor air at 420 ppm; the controller targets 1000 ppm and adjusts
+ventilation between 0 and 600 watt-equivalent units (mapped to 0–3 air changes
+per hour). Grafana shows that command separately from HVAC power consumption.
 
 ## Simulera Alfa:
 python build.py Alfa

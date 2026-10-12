@@ -355,6 +355,54 @@
       ],
       "title": "Room occupancy",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "room_ventilation_command_watts{room=~\"$room\"}",
+          "legendFormat": "{{room}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Ventilation command (watt-equivalent)",
+      "type": "timeseries"
     }
   ],
   "refresh": "5s",
@@ -407,6 +455,6 @@
   "timezone": "Europe/Stockholm",
   "title": "Building simulation",
   "uid": "building-simulation",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }

@@ -83,9 +83,15 @@ services:
         condition: service_healthy
       occupancysim:
         condition: service_healthy
+      occ:
+        condition: service_started
       sensor:
         condition: service_started
+      sensor-co2:
+        condition: service_started
       hvac:
+        condition: service_started
+      vent:
         condition: service_started
       mosquitto:
         condition: service_healthy
@@ -166,6 +172,20 @@ services:
         condition: service_healthy
 
     restart: unless-stopped
+  sensor-co2:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    command: ["python", "-u", "con-sensor.py", "--type", "co2"]
+    environment:
+      BUILDSIM_URL: http://buildsim:9090/
+      MQTT_HOST: mosquitto
+    depends_on:
+      buildsim:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+    restart: unless-stopped
   dec:
     build:
       context: .
@@ -183,6 +203,48 @@ services:
         condition: service_started
       hvac:
         condition: service_started
+    restart: unless-stopped
+  dec-co2:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    command:
+      - "python"
+      - "-u"
+      - "con-dec.py"
+      - "--type"
+      - "co2"
+      - "--setpoint"
+      - "1000"
+      - "--kp"
+      - "0.5"
+      - "--ki"
+      - "0.0001"
+      - "--kd"
+      - "0"
+    environment:
+      MQTT_HOST: mosquitto
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+      sensor-co2:
+        condition: service_started
+      vent:
+        condition: service_started
+    restart: unless-stopped
+  vent:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    command: ["python", "-u", "con-vent.py"]
+    environment:
+      BUILDSIM_URL: http://buildsim:9090/
+      MQTT_HOST: mosquitto
+    depends_on:
+      buildsim:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
     restart: unless-stopped
 volumes:
   grafana-data:
