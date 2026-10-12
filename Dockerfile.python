@@ -1,0 +1,18 @@
+
+# 1. Använd en färdig Python-miljö
+FROM python:3.12-slim
+
+# 2. Bestäm arbetsmapp inne i containern
+WORKDIR /app
+
+# 3. Kopiera filen med Python-bibliotek
+COPY requirements.txt .
+
+# 4. Installera biblioteken
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 5. Kopiera in projektets filer
+COPY . .
+
+# 6. Standardkommando om inget annat anges
+CMD ["python", "-u", "con-hvac.py"]

@@ -9,8 +9,11 @@ from pathlib import Path
 from time import sleep
 
 
-BASE="http://127.0.0.1:9090/"
-BASE_OCC="http://127.0.0.1:8081/"
+#BASE="http://127.0.0.1:9090/"
+#BASE_OCC="http://127.0.0.1:8081/"
+BASE = "http://buildsim:9090/"
+BASE_OCC = "http://occupancysim:8081/"
+
 
 default_set_temp=21
 

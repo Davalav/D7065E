@@ -45,3 +45,59 @@ services:
       retries: 3
       start_period: 10s
     restart: unless-stopped
+  hvac:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+
+    command: ["python", "-u", "con-hvac.py"]
+
+    depends_on:
+      buildsim:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+
+    restart: unless-stopped
+  sim:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+
+    command: ["python", "-u", "con-sim.py"]
+
+    depends_on:
+      buildsim:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+
+    restart: unless-stopped
+  occ:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+
+    command: ["python", "-u", "con-occ.py"]
+
+    depends_on:
+      buildsim:
+        condition: service_healthy
+      occupancysim:
+        condition: service_healthy
+
+    restart: unless-stopped
+  sensor:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+
+    command: ["python", "-u", "con-sensor.py"]
+
+    depends_on:
+      buildsim:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+
+    restart: unless-stopped

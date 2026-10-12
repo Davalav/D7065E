@@ -7,8 +7,10 @@ from time import sleep
 import requests
 
 
-BASE = "http://127.0.0.1:9090/"
-BASE_OCC = "http://127.0.0.1:8081/"
+#BASE = "http://127.0.0.1:9090/"
+#BASE_OCC = "http://127.0.0.1:8081/"
+BASE = "http://buildsim:9090/"
+BASE_OCC = "http://occupancysim:8081/"
 DATA_DIR = Path(__file__).resolve().parent / "JSON files"
 REQUEST_TIMEOUT = 10
 POLL_INTERVAL_SECONDS = 0.5

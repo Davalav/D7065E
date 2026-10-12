@@ -8,7 +8,10 @@ import json
 import requests
 
 
-BASE="http://127.0.0.1:9090/"
+#BASE="http://127.0.0.1:9090/"
+BASE = "http://buildsim:9090/"
+BROKER = "mosquitto"
+PORT = 1883
 
 headers = {'Content-Type': 'application/json'}
 
@@ -82,8 +85,8 @@ def on_message(client, userdata, msg):
 
 # 4. Ange broker-adress och port
 # "localhost" för en lokal Mosquitto, eller extern IP/domän
-BROKER = "localhost" 
-PORT = 1883
+#BROKER = "localhost" 
+#PORT = 1883
 
 
     

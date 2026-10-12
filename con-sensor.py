@@ -13,7 +13,10 @@ import paho.mqtt.publish as publish
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import CallbackAPIVersion
 
-BASE="http://127.0.0.1:9090/"
+#BASE="http://127.0.0.1:9090/"
+BASE = "http://buildsim:9090/"
+BROKER = "mosquitto"
+PORT = 1883
 
 headers = {'Content-Type': 'application/json'}
 default_temp=25
@@ -94,15 +97,16 @@ def on_message(client, userdata, msg):
     publish.single(
         topic=userdata["send_topic"], 
         payload=json.dumps(sensor_response),
-        hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
+        hostname=BROKER, # Du kan byta ut denna mot din egen broker-IP/host
+        port=PORT
     )
     print(f"Updated sensor {sensor['id']} to {sensor['value']}")
 
 
 # 4. Ange broker-adress och port
 # "localhost" för en lokal Mosquitto, eller extern IP/domän
-BROKER = "localhost" 
-PORT = 1883
+#BROKER = "localhost" 
+#PORT = 1883
 
 def main():
     args = parse_args()
@@ -129,7 +133,8 @@ def main():
     publish.single(
         topic=f"{args.level}/{args.room}/{args.type}/dec", 
         payload=str(dic_response), 
-        hostname="localhost" # Du kan byta ut denna mot din egen broker-IP/host
+        hostname=BROKER,
+        port=PORT
     )
     
     userdata = {
