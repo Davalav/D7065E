@@ -190,7 +190,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.python
-    command: ["python", "-u", "con-dec.py"]
+    command:
+      - "python"
+      - "-u"
+      - "con-dec.py"
+      - "--kp"
+      - "1000"
+      - "--ki"
+      - "10"
+      - "--kd"
+      - "0"
+      - "--max-watts"
+      - "30000"
     environment:
       MQTT_HOST: mosquitto
       OCCUPANCY_URL: http://occupancysim:8081
@@ -215,11 +226,11 @@ services:
       - "--type"
       - "co2"
       - "--setpoint"
-      - "400"
+      - "900"
       - "--kp"
-      - "0.5"
+      - "5"
       - "--ki"
-      - "0.0001"
+      - "0.001"
       - "--kd"
       - "0"
     environment:

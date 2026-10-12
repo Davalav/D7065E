@@ -89,13 +89,28 @@ def on_message(client, userdata, message):
         logging.exception("Ignoring invalid ventilation command")
         return
 
-    response = requests.put(
-        f"{BUILD_SIM_URL}/api/actuators/{quote(userdata['actuator_id'], safe='')}/state",
-        json={"state": str(wattage)},
-        timeout=REQUEST_TIMEOUT,
-    )
-    response.raise_for_status()
-    logging.info("Updated %s to %.2f W", userdata["actuator_id"], wattage)
+    try:
+        response = requests.put(
+            f"{BUILD_SIM_URL}/api/actuators/{quote(userdata['actuator_id'], safe='')}/state",
+            json={"state": str(wattage)},
+            timeout=REQUEST_TIMEOUT,
+        )
+        response.raise_for_status()
+        actual = requests.get(
+            f"{BUILD_SIM_URL}/api/actuators/{quote(userdata['actuator_id'], safe='')}",
+            timeout=REQUEST_TIMEOUT,
+        )
+        actual.raise_for_status()
+        client.publish(
+            userdata["ack_topic"],
+            json.dumps({
+                "command_id": command["command_id"],
+                "state": actual.json()["state"],
+            }),
+        )
+        logging.info("Updated %s to %.2f W", userdata["actuator_id"], wattage)
+    except (requests.RequestException, KeyError, TypeError, ValueError):
+        logging.exception("Failed to apply ventilation command; controller will retry")
 
 
 def main():
@@ -105,6 +120,7 @@ def main():
 
     userdata = {
         "listen_topic": f"{args.level}/{args.room}/{args.type}/ac",
+        "ack_topic": f"{args.level}/{args.room}/{args.type}/actuator-status",
         "actuator_id": f"{args.room}-vent",
     }
     client = mqtt.Client(

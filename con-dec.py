@@ -9,8 +9,11 @@ import paho.mqtt.client as mqtt
 import requests
 from paho.mqtt.client import CallbackAPIVersion
 
+from control_safety import ActuatorAckMonitor, SensorHealthMonitor
+
 
 CONNECT_RETRY_SECONDS = 2
+HEALTH_CHECK_INTERVAL_SECONDS = 1
 BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
 OCCUPANCY_URL = os.getenv("OCCUPANCY_URL", "http://127.0.0.1:8081").rstrip("/")
@@ -27,7 +30,7 @@ def parse_args():
     parser.add_argument("--kp", type=float, default=100.0, help="PID proportional gain (W/°C)")
     parser.add_argument("--ki", type=float, default=0.02, help="PID integral gain (W/(°C·s))")
     parser.add_argument("--kd", type=float, default=25.0, help="PID derivative gain (W·s/°C)")
-    parser.add_argument("--max-watts", type=float, default=1000.0)
+    parser.add_argument("--max-watts", type=float, default=30000.0)
     return parser.parse_args()
 
 
@@ -115,6 +118,7 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
     if reason_code == 0:
         print("Ansluten till brokern!")
         client.subscribe(userdata["listen_topic"])
+        client.subscribe(userdata["ack_topic"])
         try:
             update_setpoint(client, userdata, force=True)
         except (requests.RequestException, KeyError, TypeError, ValueError):
@@ -124,13 +128,46 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
 
 
 def on_message(client, userdata, msg):
+    if msg.topic == userdata["ack_topic"]:
+        try:
+            acknowledgement = json.loads(msg.payload.decode("utf-8"))
+            accepted = userdata["actuator_monitor"].acknowledge(
+                acknowledgement["command_id"], acknowledgement["state"]
+            )
+        except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError):
+            logging.exception("Ignoring invalid actuator acknowledgement")
+            return
+        if not accepted:
+            logging.error("Actuator failed to apply the latest command")
+        else:
+            logging.info("Actuator command %s confirmed", acknowledgement["command_id"])
+        return
+
     print(f"Mottaget meddelande på '{msg.topic}': {msg.payload.decode('utf-8')}")
     try:
         reading = json.loads(msg.payload.decode("utf-8"))
         measured_value = float(reading["value"])
+        userdata["sensor_monitor"].observe(
+            measured_value, time.monotonic()
+        )
     except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError):
         logging.exception("Ignoring invalid %s reading", userdata["sensor_type"])
         return
+
+    failure_reason = userdata["sensor_monitor"].failure_reason(time.monotonic())
+    if failure_reason:
+        if not userdata["fail_safe"]:
+            logging.error(
+                "%s %s; entering fail-safe mode",
+                userdata["sensor_type"],
+                failure_reason,
+            )
+            publish_wattage(client, userdata, safe_output(userdata))
+            userdata["fail_safe"] = True
+        return
+    if userdata["fail_safe"]:
+        logging.info("%s sensor recovered; resuming PID control", userdata["sensor_type"])
+        userdata["fail_safe"] = False
 
     try:
         update_setpoint(client, userdata)
@@ -139,11 +176,50 @@ def on_message(client, userdata, msg):
         return
 
     wattage = userdata["regulator"].update(measured_value)
-    client.publish(
-        userdata["send_topic"],
-        json.dumps({"watt": str(round(wattage, 2))}),
-    )
+    publish_wattage(client, userdata, wattage)
     print(f"PID: {measured_value:.2f} -> {wattage:.2f} W")
+
+
+def safe_output(userdata):
+    if userdata["sensor_type"] == "co2":
+        return userdata["regulator"].max_output
+    return 0.0
+
+
+def publish_wattage(client, userdata, wattage):
+    command_id = userdata["next_command_id"]
+    userdata["next_command_id"] += 1
+    payload = {
+        "watt": str(round(wattage, 2)),
+        "command_id": command_id,
+    }
+    userdata["last_command_payload"] = payload
+    userdata["actuator_monitor"].command_sent(
+        command_id, payload["watt"], time.monotonic()
+    )
+    client.publish(userdata["send_topic"], json.dumps(payload))
+
+
+def health_watchdog(client, userdata):
+    now = time.monotonic()
+    reason = userdata["sensor_monitor"].failure_reason(now)
+    if reason and not userdata["fail_safe"]:
+        logging.error("%s %s; entering fail-safe mode", userdata["sensor_type"], reason)
+        publish_wattage(client, userdata, safe_output(userdata))
+        userdata["fail_safe"] = True
+
+    monitor = userdata["actuator_monitor"]
+    if monitor.timed_out(now):
+        logging.error(
+            "%s actuator did not confirm command %s; retrying command",
+            userdata["sensor_type"],
+            monitor.command_id,
+        )
+        client.publish(
+            userdata["send_topic"],
+            json.dumps(userdata["last_command_payload"]),
+        )
+        monitor.mark_retry(now)
 
 
 def main():
@@ -163,9 +239,19 @@ def main():
     userdata = {
         "listen_topic": f"{args.level}/{args.room}/{args.type}/dec",
         "send_topic": f"{args.level}/{args.room}/{args.type}/ac",
+        "ack_topic": f"{args.level}/{args.room}/{args.type}/actuator-status",
         "regulator": regulator,
         "sensor_type": args.type,
         "configured_setpoint": args.setpoint,
+        "sensor_monitor": SensorHealthMonitor(
+            stale_after=15.0,
+            stuck_samples=5,
+            started_at=time.monotonic(),
+        ),
+        "actuator_monitor": ActuatorAckMonitor(response_timeout=10.0),
+        "next_command_id": 1,
+        "last_command_payload": None,
+        "fail_safe": False,
     }
 
     client = mqtt.Client(
@@ -187,9 +273,13 @@ def main():
                     f"Retrying in {CONNECT_RETRY_SECONDS}s."
                 )
                 time.sleep(CONNECT_RETRY_SECONDS)
-        client.loop_forever()
+        client.loop_start()
+        while True:
+            health_watchdog(client, userdata)
+            time.sleep(HEALTH_CHECK_INTERVAL_SECONDS)
     except KeyboardInterrupt:
         print("\nAvslutar...")
+        client.loop_stop()
         client.disconnect()
     
 if __name__ == "__main__":

@@ -26,9 +26,18 @@ its container is restarted. Grafana configuration remains in the
 
 Compose also starts a CO₂ sensor, PID controller, and ventilation actuator for
 room A109. The room simulation models occupant CO₂ generation and ventilation
-with outdoor air at 420 ppm; the controller targets 1000 ppm and adjusts
+with outdoor air at 420 ppm; the controller targets 900 ppm and adjusts
 ventilation between 0 and 600 watt-equivalent units (mapped to 0–3 air changes
 per hour). Grafana shows that command separately from HVAC power consumption.
+
+## Control scenario and failure tests
+
+Run `python -m unittest discover -s tests -v` to check cold-weather heating,
+full-room CO₂ recovery, and sensor/actuator fault handling. Missing or
+unchanging sensor data triggers a fail-safe output (heating off, ventilation
+fully open); sensor readings resume normal PID control after recovery.
+Actuators confirm applied wattage to the controller. Missing or mismatched
+acknowledgements are detected and the latest command is retried.
 
 ## Simulera Alfa:
 python build.py Alfa

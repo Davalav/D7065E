@@ -5,8 +5,10 @@ from paho.mqtt.client import CallbackAPIVersion
 import argparse
 import paho.mqtt.publish as publish
 import json
+import logging
 import requests
 import os
+from urllib.parse import quote
 
 
 BASE = os.getenv("BUILDSIM_URL", "http://127.0.0.1:9090/")
@@ -59,28 +61,45 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
 
 # 2. Defeniera vad som ska hända när ett nytt meddelande tas emot
 def on_message(client, userdata, msg):
-    # msg.payload kommer som bytes, använd .decode() för att göra om till text (str)
-    print(f"Mottaget meddelande på '{msg.topic}': {msg.payload.decode('utf-8')}")
-    #dic_response = json.loads(msg.payload.decode('utf-8'))
-    
-    dic_response = json.loads(msg.payload.decode('utf-8').replace("'",'"'))
+    try:
+        dic_response = json.loads(msg.payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        logging.exception("Ignoring invalid HVAC command")
+        return
 
-    print(dic_response)
-    
-    if "watt" in dic_response:
-        payload={
-            "state":dic_response["watt"],
-            }
-        response = requests.put(str(BASE+f"api/actuators/{userdata["room"]}-watt/state"), json=payload, headers=headers)
-        dic_response = json.loads(response.text)
-        print(dic_response)
-    if "set_temp" in dic_response:
-        payload={
-            "state":dic_response["set_temp"],
-            }
-        response = requests.put(str(BASE+f"api/actuators/{userdata["room"]}-set/state"), json=payload, headers=headers)
-        dic_response = json.loads(response.text)
-        print(dic_response)
+    try:
+        if "watt" in dic_response:
+            actuator_id = f"{userdata['room']}-watt"
+            response = requests.put(
+                f"{BASE}api/actuators/{quote(actuator_id, safe='')}/state",
+                json={"state": dic_response["watt"]},
+                headers=headers,
+                timeout=10,
+            )
+            response.raise_for_status()
+            actual = requests.get(
+                f"{BASE}api/actuators/{quote(actuator_id, safe='')}",
+                timeout=10,
+            )
+            actual.raise_for_status()
+            client.publish(
+                userdata["ack_topic"],
+                json.dumps({
+                    "command_id": dic_response["command_id"],
+                    "state": actual.json()["state"],
+                }),
+            )
+        if "set_temp" in dic_response:
+            actuator_id = f"{userdata['room']}-set"
+            response = requests.put(
+                f"{BASE}api/actuators/{quote(actuator_id, safe='')}/state",
+                json={"state": dic_response["set_temp"]},
+                headers=headers,
+                timeout=10,
+            )
+            response.raise_for_status()
+    except (requests.RequestException, KeyError, TypeError, ValueError):
+        logging.exception("Failed to apply HVAC command; controller will retry")
 
 
 # 4. Ange broker-adress och port
@@ -122,6 +141,7 @@ def main():
     userdata = {
         "listen_topic": f"{args.level}/{args.room}/{args.type}/ac",
         "send_topic": f"{args.level}/{args.room}/{args.type}/sim",
+        "ack_topic": f"{args.level}/{args.room}/{args.type}/actuator-status",
         "room": args.room
     }
     client = mqtt.Client(
