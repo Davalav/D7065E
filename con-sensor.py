@@ -19,9 +19,8 @@ BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
 
 headers = {'Content-Type': 'application/json'}
-default_temp=25
+default_temp=18
 default_co2=400
-default_occ=0
 
 
 equipments = {
@@ -54,20 +53,6 @@ equipments = {
         "unit":"°C",
         "value":str(default_temp)
     }),
-    "occupancy":({
-        "id": "occupancy-",
-        "name": "Occupancy Sensor ",
-        "type": "occupancy_counter",
-        "category": "monitoring",
-    },
-    {
-        "id":"-occupancy",
-        "name":"Occupancy",
-        "type":"occupancy",
-        "data_type":"text",
-        "unit":"people",
-        "value":str(default_occ)
-    })
 }
 
 def parse_args():
