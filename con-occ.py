@@ -21,6 +21,8 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Publish lecture-based room occupancy to room sensors."
     )
+    parser.add_argument("--level", default="0")
+    parser.add_argument("--room", default="A109")
     parser.add_argument("--timestep-minutes", type=float, default=5)
     parser.add_argument(
         "--occupants-per-lecture",
@@ -108,23 +110,14 @@ def wait_for_next_timestep(session, previous_time, timestep):
         sleep(POLL_INTERVAL_SECONDS)
 
 
-def lecture_occupancy(lecture_data, configured_rooms, timestamp, occupants_per_lecture):
+def lecture_occupancy(lecture_data, room_name, timestamp, occupants_per_lecture):
     sessions = {
         session["Session"]: session for session in lecture_data["sessions"]
     }
-    rooms = {
-        room["name"]: str(room["floor"]) for room in configured_rooms["rooms"]
-    }
-    scheduled_rooms = {row["Classroom"] for row in lecture_data["schedule"]}
-    missing_rooms = scheduled_rooms - rooms.keys()
-    if missing_rooms:
-        raise ValueError(
-            f"Lecture rooms missing from rooms.json: {', '.join(sorted(missing_rooms))}"
-        )
-    occupancy = {room_name: 0 for room_name in scheduled_rooms}
+    occupants = 0
 
     for row in lecture_data["schedule"]:
-        if row["Day"] != timestamp.strftime("%A"):
+        if row["Classroom"] != room_name or row["Day"] != timestamp.strftime("%A"):
             continue
 
         session = sessions[row["Session"]]
@@ -133,9 +126,9 @@ def lecture_occupancy(lecture_data, configured_rooms, timestamp, occupants_per_l
         current_time = timestamp.time().replace(tzinfo=None)
         active = row["Lecture"] and start <= current_time < end
         if active:
-            occupancy[row["Classroom"]] += occupants_per_lecture
+            occupants += occupants_per_lecture
 
-    return occupancy
+    return occupants
 
 
 def main():
@@ -152,19 +145,15 @@ def main():
         configured_rooms = json.load(source)
 
     session = requests.Session()
-    scheduled_rooms = {
-        row["Classroom"] for row in lecture_data["schedule"]
-    }
     room_floors = {
         room["name"]: str(room["floor"]) for room in configured_rooms["rooms"]
     }
-    missing_rooms = scheduled_rooms - room_floors.keys()
-    if missing_rooms:
+    floor = room_floors.get(args.room)
+    if floor is None or floor != str(args.level):
         raise ValueError(
-            f"Lecture rooms missing from rooms.json: {', '.join(sorted(missing_rooms))}"
+            f"Room {args.room!r} on level {args.level!r} is not configured"
         )
-    for room_name in sorted(scheduled_rooms):
-        ensure_sensor(session, room_name, room_floors[room_name])
+    ensure_sensor(session, args.room, floor)
 
     state = api_json(session, "GET", BASE_OCC, "api/state")
     simulation_time = state_time(state)
@@ -175,26 +164,22 @@ def main():
             state, simulation_time = wait_for_next_timestep(
                 session, simulation_time, timestep
             )
-            room_occupancy = lecture_occupancy(
+            occupants = lecture_occupancy(
                 lecture_data,
-                configured_rooms,
+                args.room,
                 simulation_time,
                 args.occupants_per_lecture,
             )
-            active_rooms = sum(
-                count > 0 for count in room_occupancy.values()
+            api_json(
+                session,
+                "PUT",
+                BASE,
+                f"api/sensors/{quote(sensor_id(args.room), safe='')}/value",
+                json={"data_type": "text", "value": str(occupants)},
             )
-            for room_name, count in room_occupancy.items():
-                api_json(
-                    session,
-                    "PUT",
-                    BASE,
-                    f"api/sensors/{quote(sensor_id(room_name), safe='')}/value",
-                    json={"data_type": "text", "value": str(count)},
-                )
             print(
                 f"{state['sim']['clock']['time']} | "
-                f"{active_rooms} lecture room(s) occupied"
+                f"{args.room}: {occupants} occupants"
             )
     except KeyboardInterrupt:
         print("\nStopping occupancy publisher.")
