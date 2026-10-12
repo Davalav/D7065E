@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument("--kp", type=float, default=100.0, help="PID proportional gain (W/°C)")
     parser.add_argument("--ki", type=float, default=0.02, help="PID integral gain (W/(°C·s))")
     parser.add_argument("--kd", type=float, default=25.0, help="PID derivative gain (W·s/°C)")
-    parser.add_argument("--max-watts", type=float, default=300.0)
+    parser.add_argument("--max-watts", type=float, default=600.0)
     return parser.parse_args()
 
 

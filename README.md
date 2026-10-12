@@ -7,6 +7,17 @@ sudo docker compose up --build
 The occupancy simulator loads its startup parameters from `occupancy-config.json`,
 which is mounted into the service by Compose.
 
+## Monitoring dashboard
+
+Compose starts Prometheus and Grafana alongside the simulation. Open Grafana at
+http://localhost:3000 and sign in with `admin` / `admin` on first start. The
+provisioned **Building / Building simulation** dashboard shows the scheduled
+outside temperature and BuildSim room power, temperature, setpoint, CO₂, and
+occupancy readings. The room selector filters the room panels; a metric is
+shown when its corresponding sensor or actuator is present in BuildSim.
+
+Prometheus is also available at http://localhost:9091. Dashboard history is
+stored in the `grafana-data` and `prometheus-data` Compose volumes.
 
 
 ## Simulera Alfa:
@@ -28,7 +39,6 @@ sudo docker compose down
 ## TODO
 - Containerize(Dela upp i separata containers
 - Actuator/Autonomous decision making agent
-- Dashboard
 - Project paper
 - Test plan
 - C4 context and container diagrams
