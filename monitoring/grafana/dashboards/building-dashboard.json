@@ -113,7 +113,7 @@
           "refId": "A"
         }
       ],
-      "title": "Occupancy simulation clock (UTC)",
+      "title": "Occupancy simulation clock (Swedish time)",
       "type": "stat"
     },
     {

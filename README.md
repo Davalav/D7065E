@@ -18,7 +18,8 @@ shown when its corresponding sensor or actuator is present in BuildSim.
 
 Prometheus is also available at http://localhost:9091. Graph samples use
 system-time scrape timestamps so Grafana's time picker can display them; the
-dashboard separately shows the current occupancy simulator clock in UTC.
+dashboard separately shows the occupancy simulator's displayed clock in
+Swedish local time.
 Prometheus uses temporary storage, so collected values are cleared whenever
 its container is restarted. Grafana configuration remains in the
 `grafana-data` volume.

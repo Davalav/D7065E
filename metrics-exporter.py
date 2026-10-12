@@ -1,9 +1,10 @@
 import json
 import logging
 import os
-from datetime import datetime, time
+from datetime import date, datetime, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from zoneinfo import ZoneInfo
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -14,6 +15,7 @@ LISTEN = ("0.0.0.0", int(os.getenv("METRICS_PORT", "9101")))
 REQUEST_TIMEOUT = 5
 DATA_DIR = Path(__file__).resolve().parent / "JSON files"
 WEATHER_PATH = DATA_DIR / "Weather.json"
+SIMULATION_TIMEZONE = ZoneInfo("Europe/Stockholm")
 
 METRIC_INFO = (
     ("building_outside_temperature_celsius", "Outside air temperature in Celsius."),
@@ -73,10 +75,17 @@ def metric_samples(equipment, clock, weather):
         "building_occupancy_sim_time_seconds": [],
     }
     timestamp = datetime.fromisoformat(clock["time"])
+    simulated_wall_time = datetime.combine(
+        date.fromisoformat(clock["date"]),
+        time.fromisoformat(clock["time_of_day"]),
+        tzinfo=SIMULATION_TIMEZONE,
+    )
     values["building_outside_temperature_celsius"].append(
         ((), outside_temperature_at(weather, timestamp))
     )
-    values["building_occupancy_sim_time_seconds"].append(((), timestamp.timestamp()))
+    values["building_occupancy_sim_time_seconds"].append(
+        ((), simulated_wall_time.timestamp())
+    )
 
     for item in equipment:
         room = item.get("room")
