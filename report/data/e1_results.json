@@ -1,0 +1,382 @@
+{
+  "window": {
+    "sim_start": "2026-10-12T07:49:23",
+    "sim_end": "2026-10-14T09:02:53",
+    "steps": 581,
+    "real_minutes": 49.22102548333333
+  },
+  "start_state": {
+    "A107": {
+      "occ": 0,
+      "hvac": 81.0,
+      "vent": 0.0,
+      "temp": 17.63,
+      "co2": 443.1
+    },
+    "A108": {
+      "occ": 0,
+      "hvac": 0.0,
+      "vent": 0.0,
+      "temp": 18.02,
+      "co2": 858.3
+    },
+    "A109": {
+      "occ": 0,
+      "hvac": 0.0,
+      "vent": 600.0,
+      "temp": 17.67,
+      "co2": 427.2
+    },
+    "A110": {
+      "occ": 0,
+      "hvac": 0.0,
+      "vent": 0.0,
+      "temp": 18.19,
+      "co2": 889.2
+    },
+    "A111": {
+      "occ": 0,
+      "hvac": 0.0,
+      "vent": 0.0,
+      "temp": 17.89,
+      "co2": 438.2
+    }
+  },
+  "comfort_energy": {
+    "A107": {
+      "first_within_0.5C": "2026-10-12T13:38:53",
+      "hours_to_reach": 5.825,
+      "day_steps_in_band_pct": 63.04347826086956,
+      "day_steps_after_reach": 230,
+      "energy_day_kWh": 148.04575,
+      "energy_night_kWh": 10.501833333333334,
+      "morning_recovery_h": [
+        3.046666666666667
+      ],
+      "max_occupants": 29,
+      "occupied_steps": 27,
+      "occupied_in_band_pct": 81.48148148148148
+    },
+    "A108": {
+      "first_within_0.5C": "2026-10-12T13:13:29",
+      "hours_to_reach": 5.401666666666666,
+      "day_steps_in_band_pct": 62.12765957446808,
+      "day_steps_after_reach": 235,
+      "energy_day_kWh": 141.09158333333335,
+      "energy_night_kWh": 8.767833333333334,
+      "morning_recovery_h": [
+        3.555
+      ],
+      "max_occupants": 29,
+      "occupied_steps": 47,
+      "occupied_in_band_pct": 42.5531914893617
+    },
+    "A109": {
+      "first_within_0.5C": "2026-10-12T17:52:17",
+      "hours_to_reach": 10.048333333333334,
+      "day_steps_in_band_pct": 35.0,
+      "day_steps_after_reach": 180,
+      "energy_day_kWh": 193.14116666666666,
+      "energy_night_kWh": 35.90525,
+      "morning_recovery_h": [
+        6.266666666666667
+      ],
+      "max_occupants": 24,
+      "occupied_steps": 24,
+      "occupied_in_band_pct": 83.33333333333333
+    },
+    "A110": {
+      "first_within_0.5C": "2026-10-12T14:44:41",
+      "hours_to_reach": 6.921666666666667,
+      "day_steps_in_band_pct": 59.44700460829493,
+      "day_steps_after_reach": 217,
+      "energy_day_kWh": 140.78766666666667,
+      "energy_night_kWh": 7.86375,
+      "morning_recovery_h": [
+        2.368333333333333,
+        2.785
+      ],
+      "max_occupants": 26,
+      "occupied_steps": 57,
+      "occupied_in_band_pct": 47.36842105263158
+    },
+    "A111": {
+      "first_within_0.5C": "2026-10-12T13:59:05",
+      "hours_to_reach": 6.161666666666667,
+      "day_steps_in_band_pct": 59.73451327433628,
+      "day_steps_after_reach": 226,
+      "energy_day_kWh": 150.79866666666666,
+      "energy_night_kWh": 11.58,
+      "morning_recovery_h": [
+        2.9616666666666664
+      ],
+      "max_occupants": 24,
+      "occupied_steps": 26,
+      "occupied_in_band_pct": 23.076923076923077
+    }
+  },
+  "co2": {
+    "A107": {
+      "peak_ppm": 953.2,
+      "occupied_steps": 27,
+      "occupied_above_1000_pct": 0.0,
+      "steps_above_900": 11,
+      "vent_on_next_step_pct": 100.0
+    },
+    "A108": {
+      "peak_ppm": 956.6,
+      "occupied_steps": 47,
+      "occupied_above_1000_pct": 0.0,
+      "steps_above_900": 43,
+      "vent_on_next_step_pct": 100.0
+    },
+    "A109": {
+      "peak_ppm": 776.0,
+      "occupied_steps": 24,
+      "occupied_above_1000_pct": 0.0,
+      "steps_above_900": 0,
+      "vent_on_next_step_pct": null
+    },
+    "A110": {
+      "peak_ppm": 966.2,
+      "occupied_steps": 57,
+      "occupied_above_1000_pct": 0.0,
+      "steps_above_900": 55,
+      "vent_on_next_step_pct": 100.0
+    },
+    "A111": {
+      "peak_ppm": 948.5,
+      "occupied_steps": 26,
+      "occupied_above_1000_pct": 0.0,
+      "steps_above_900": 9,
+      "vent_on_next_step_pct": 100.0
+    }
+  },
+  "latency": {
+    "sense": {
+      "n": 5808,
+      "p50_ms": 27.497,
+      "p95_ms": 107.22959999999996,
+      "max_ms": 691.3000000000001
+    },
+    "act": {
+      "n": 5808,
+      "p50_ms": 29.890500000000003,
+      "p95_ms": 100.14759999999995,
+      "max_ms": 511.945
+    },
+    "total": {
+      "n": 5808,
+      "p50_ms": 58.674,
+      "p95_ms": 206.81079999999994,
+      "max_ms": 886.083
+    },
+    "missing_decisions": 2,
+    "expected_decisions": 5810
+  },
+  "stepping": {
+    "interval_p50_s": 5.0811575,
+    "interval_max_s": 5.668375,
+    "step_work_p50_ms": 20.738,
+    "step_work_max_ms": 84.312
+  },
+  "nominal_failsafes": [
+    [
+      "2026-10-12T17:56:39.070307",
+      "A109",
+      "co2",
+      "reading is stuck"
+    ],
+    [
+      "2026-10-12T17:57:34.760840",
+      "A109",
+      "co2",
+      "reading is stuck"
+    ],
+    [
+      "2026-10-12T18:00:16.949810",
+      "A109",
+      "co2",
+      "reading is stuck"
+    ],
+    [
+      "2026-10-12T18:11:07.765413",
+      "A109",
+      "co2",
+      "reading is stuck"
+    ],
+    [
+      "2026-10-12T18:12:23.777224",
+      "A109",
+      "co2",
+      "reading is stuck"
+    ],
+    [
+      "2026-10-12T18:18:59.879140",
+      "A109",
+      "co2",
+      "reading is stuck"
+    ]
+  ],
+  "setpoint_changes": [
+    [
+      "2026-10-12T17:50:33.618251",
+      21.0,
+      "A107"
+    ],
+    [
+      "2026-10-12T18:00:52.512915",
+      17.0,
+      "A107"
+    ],
+    [
+      "2026-10-12T18:12:54.164351",
+      21.0,
+      "A107"
+    ],
+    [
+      "2026-10-12T18:24:51.108648",
+      17.0,
+      "A107"
+    ],
+    [
+      "2026-10-12T18:36:50.508584",
+      21.0,
+      "A107"
+    ],
+    [
+      "2026-10-12T18:45:11.337298",
+      21.0,
+      "A107"
+    ],
+    [
+      "2026-10-12T18:47:05.766603",
+      21.0,
+      "A107"
+    ],
+    [
+      "2026-10-12T18:48:52.918805",
+      17.0,
+      "A107"
+    ]
+  ],
+  "faults": {
+    "E2": {
+      "detect_after_last_reading_s": 15.867755,
+      "recovered_after_restart_s": 0.650713,
+      "other_room_decisions_during_outage": 104,
+      "outage_s": 65.043791,
+      "a110_hvac_during_outage_W": [
+        5083.0,
+        5686.0,
+        5686.0,
+        5686.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "E3": {
+      "retry_after_first_unacked_command_s": 10.888362,
+      "retries": 3,
+      "confirmed_after_restart_s": 2.467227,
+      "other_room_decisions_during_outage": 72,
+      "a109_hvac_after_restart_W": [
+        9312.0,
+        9689.0,
+        9720.0,
+        9654.0,
+        9740.0,
+        9575.0
+      ]
+    },
+    "E4": {
+      "auto_restart": "E4 dec after 20 s: exited restarts=0",
+      "manual_start": true,
+      "control_gap_s": 25.394688,
+      "first_decision_after_kill_s": 23.956732
+    },
+    "E5": {
+      "broker_down_s": 21.645076,
+      "failsafe_entries": 10,
+      "first_decision_after_broker_start_s": 8.040831,
+      "all_recovered_after_broker_start_s": 8.067294,
+      "loops_recovered": 10,
+      "sim_restarts": "3",
+      "dec_restarts": "0"
+    }
+  },
+  "memory_20min": {
+    "buildsim": {
+      "count": 1,
+      "mean_MiB": 22.05,
+      "total_MiB": 22.05
+    },
+    "dec": {
+      "count": 1,
+      "mean_MiB": 19.93,
+      "total_MiB": 19.93
+    },
+    "grafana": {
+      "count": 1,
+      "mean_MiB": 71.72,
+      "total_MiB": 71.72
+    },
+    "hvac": {
+      "count": 5,
+      "mean_MiB": 18.84,
+      "total_MiB": 94.2
+    },
+    "metrics-exporter": {
+      "count": 1,
+      "mean_MiB": 15.5,
+      "total_MiB": 15.5
+    },
+    "mosquitto": {
+      "count": 1,
+      "mean_MiB": 16.35,
+      "total_MiB": 16.35
+    },
+    "occ": {
+      "count": 5,
+      "mean_MiB": 20.05,
+      "total_MiB": 100.25
+    },
+    "occupancysim": {
+      "count": 1,
+      "mean_MiB": 17.15,
+      "total_MiB": 17.15
+    },
+    "prometheus": {
+      "count": 1,
+      "mean_MiB": 39.84,
+      "total_MiB": 39.84
+    },
+    "sensor": {
+      "count": 5,
+      "mean_MiB": 19.088,
+      "total_MiB": 95.44
+    },
+    "sensor-co2": {
+      "count": 5,
+      "mean_MiB": 19.142,
+      "total_MiB": 95.71000000000001
+    },
+    "sim": {
+      "count": 1,
+      "mean_MiB": 29.11,
+      "total_MiB": 29.11
+    },
+    "vent": {
+      "count": 5,
+      "mean_MiB": 19.221999999999998,
+      "total_MiB": 96.11
+    }
+  }
+}

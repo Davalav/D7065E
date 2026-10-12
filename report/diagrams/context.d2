@@ -1,0 +1,22 @@
+direction: down
+**.style.font-size: 22
+(** -> **)[*].style.font-size: 18
+manager: "Building manager\n[Person]\nWatches the dashboard; chooses\nwhich rooms are controlled" { shape: person }
+occupants: "Occupants\n[Person, simulated]\nTheir heat and CO₂ load the rooms" { shape: person }
+sys: "Room Climate Control\n[Software System]\nSimulates room physics; decides heating\nand ventilation for every controlled room" {
+  style.fill: "#cfe2ff"
+  style.stroke: "#1f4e9c"
+  style.stroke-width: 2
+}
+occsim: "Occupancy simulator\n[Software System, course-provided]\nMoves people; owns the simulated clock" {
+  style.fill: "#ececec"
+}
+bs: "BuildSim\n[Software System, course-provided]\nBuilding model, device registry,\n3D viewer" {
+  style.fill: "#ececec"
+}
+manager -> sys: "views dashboard [HTTP]\nselects rooms [rooms.json]"
+manager -> bs: "views 3D building [HTTP + WebSocket]"
+occupants -> occsim: "are modelled by"
+occsim -> bs: "positions + room occupancy [REST]"
+sys -> occsim: "reads clock + head-counts [REST]"
+sys -> bs: "registers devices; writes sensor values;\nreads and writes actuator state [REST]"

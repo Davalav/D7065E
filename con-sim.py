@@ -1,4 +1,4 @@
-# En sim
+# Physics simulation for every simulated room.
 import argparse
 import paho.mqtt.publish as publish
 import json
@@ -11,6 +11,8 @@ from datetime import datetime, time, timedelta
 from pathlib import Path
 from time import sleep
 from urllib.parse import quote
+
+from room_config import load_simulated_rooms
 
 
 BASE = os.getenv("BUILDSIM_URL", "http://127.0.0.1:9090/")
@@ -37,8 +39,6 @@ MAX_VENTILATION_AIR_CHANGES_PER_HOUR = 3.0
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Simulate room temperatures.")
-    parser.add_argument("--level", default="0")
-    parser.add_argument("--room", default="A109")
     parser.add_argument("--timestep-minutes", type=float, default=5)
     parser.add_argument("--temperature", type=float, default=25)
     parser.add_argument("--noise-stddev", type=float, default=0.2)
@@ -126,6 +126,10 @@ def wait_for_next_timestep(session, previous_time, timestep):
         elif current_time - interval_start >= timestep:
             return interval_start, current_time
         sleep(POLL_INTERVAL_SECONDS)
+
+
+def api_path(kind, room, suffix):
+    return f"api/{kind}/{quote(f'{room}-{suffix}', safe='')}"
 
 
 def room_occupancy(session, room):
@@ -242,7 +246,141 @@ def simulate_co2_step(
 
 BROKER = os.getenv("MQTT_HOST", "localhost")
 PORT = 1883
-    
+
+
+def load_room_state(session, configured_room, floors):
+    name = configured_room["name"]
+    level = str(configured_room["floor"])
+    if level not in floors:
+        floors[level] = api_json(
+            session,
+            "GET",
+            BASE,
+            f"api/building/floors/level{level}",
+        )
+    floor_room = next(
+        (item for item in floors[level]["rooms"] if item["name"] == name),
+        None,
+    )
+    if floor_room is None:
+        raise ValueError(f"Room {name!r} not found in the building API")
+
+    sensor = wait_for_api_json(
+        session, api_path("sensors", name, "temp"), f"{name} temperature sensor"
+    )
+    co2_sensor = wait_for_api_json(
+        session, api_path("sensors", name, "co2"), f"{name} CO2 sensor"
+    )
+    wait_for_api_json(
+        session, api_path("actuators", name, "watt"), f"{name} HVAC actuator"
+    )
+    wait_for_api_json(
+        session, api_path("actuators", name, "vent"), f"{name} ventilation actuator"
+    )
+    wait_for_api_json(
+        session, api_path("sensors", name, "occupancy"), f"{name} occupancy sensor"
+    )
+
+    topic_room = quote(name, safe="")
+    air_temperature = float(sensor["value"])
+    return {
+        "name": name,
+        "area": float(floor_room["area"]),
+        "wall_length": float(configured_room["walls"]),
+        "air_temperature": air_temperature,
+        "mass_temperature": air_temperature,
+        "co2_ppm": max(OUTDOOR_CO2_PPM, float(co2_sensor["value"])),
+        "temperature_topic": f"{level}/{topic_room}/temp/sensor",
+        "co2_topic": f"{level}/{topic_room}/co2/sensor",
+    }
+
+
+def step_room(
+    session,
+    room,
+    outside_temperature,
+    duration_seconds,
+    noise_stddev,
+    co2_noise_stddev,
+):
+    # Read every input before touching the room state so a failed request leaves it unchanged.
+    name = room["name"]
+    wattage = float(
+        api_json(session, "GET", BASE, api_path("actuators", name, "watt"))["state"]
+    )
+    ventilation_wattage = float(
+        api_json(session, "GET", BASE, api_path("actuators", name, "vent"))["state"]
+    )
+    occupants = room_occupancy(session, name)
+    volume_m3 = room["area"] * ROOM_HEIGHT_METERS
+
+    room["air_temperature"], room["mass_temperature"] = simulate_step(
+        air_temperature=room["air_temperature"],
+        mass_temperature=room["mass_temperature"],
+        volume_m3=volume_m3,
+        floor_area_m2=room["area"],
+        exterior_wall_length_m=room["wall_length"],
+        outside_temperature=outside_temperature,
+        setpoint=default_set_temp,
+        heater_max_watts=wattage,
+        duration_seconds=duration_seconds,
+        internal_gains_watts=occupants * SENSIBLE_HEAT_PER_OCCUPANT_W,
+    )
+    noisy_temperature = room["air_temperature"] + random.gauss(0, noise_stddev)
+    room["co2_ppm"] = simulate_co2_step(
+        co2_ppm=room["co2_ppm"],
+        occupants=occupants,
+        ventilation_watts=ventilation_wattage,
+        room_volume_m3=volume_m3,
+        duration_seconds=duration_seconds,
+    )
+    noisy_co2 = max(
+        OUTDOOR_CO2_PPM,
+        room["co2_ppm"] + random.gauss(0, co2_noise_stddev),
+    )
+    print(
+        f"  {name} | {occupants} occupants | "
+        f"{wattage:.0f} W HVAC | {ventilation_wattage:.0f} W vent | "
+        f"{noisy_temperature:.2f} °C | {noisy_co2:.1f} ppm CO2"
+    )
+    return [
+        {
+            "topic": room["temperature_topic"],
+            "payload": json.dumps({"value": str(round(noisy_temperature, 2))}),
+        },
+        {
+            "topic": room["co2_topic"],
+            "payload": json.dumps({"value": str(round(noisy_co2, 1))}),
+        },
+    ]
+
+
+def simulate_rooms(
+    session,
+    rooms,
+    outside_temperature,
+    duration_seconds,
+    noise_stddev,
+    co2_noise_stddev,
+):
+    messages = []
+    for room in rooms:
+        try:
+            messages.extend(
+                step_room(
+                    session,
+                    room,
+                    outside_temperature,
+                    duration_seconds,
+                    noise_stddev,
+                    co2_noise_stddev,
+                )
+            )
+        except (requests.RequestException, KeyError, TypeError, ValueError):
+            logging.exception("Skipping %s for this timestep", room["name"])
+    return messages
+
+
 def main():
     logging.basicConfig(level=logging.INFO)
     args = parse_args()
@@ -255,73 +393,16 @@ def main():
         raise ValueError("CO2 noise standard deviation must be non-negative")
 
     weather_data = load_json(DATA_DIR / "Weather.json")
-    room_data = load_json(DATA_DIR / "rooms.json")
     weather_by_day = prepare_weather(weather_data["weather"])
-    configured_room = next(
-        (
-            item
-            for item in room_data["rooms"]
-            if item["name"] == args.room and str(item["floor"]) == str(args.level)
-        ),
-        None,
-    )
-    if configured_room is None:
-        raise ValueError(f"Room {args.room!r} on level {args.level!r} is not configured")
 
     session = requests.Session()
-    floor = api_json(
-        session,
-        "GET",
-        BASE,
-        f"api/building/floors/level{args.level}",
-    )
-    floor_room = next(
-        (item for item in floor["rooms"] if item["name"] == args.room),
-        None,
-    )
-    if floor_room is None:
-        raise ValueError(f"Room {args.room!r} not found in the building API")
+    floors = {}
+    rooms = [
+        load_room_state(session, configured_room, floors)
+        for configured_room in load_simulated_rooms()
+    ]
+    print(f"Simulating {len(rooms)} rooms: {', '.join(room['name'] for room in rooms)}")
 
-    room = {
-        "name": args.room,
-        "area": float(floor_room["area"]),
-        "wall_length": float(configured_room["walls"]),
-        "air_temperature": args.temperature,
-        "mass_temperature": args.temperature,
-    }
-    sensor = wait_for_api_json(
-        session,
-        f"api/sensors/{quote(f'{args.room}-temp', safe='')}",
-        f"{args.room} temperature sensor",
-    )
-    room["air_temperature"] = float(sensor["value"])
-    room["mass_temperature"] = room["air_temperature"]
-
-    co2_sensor = wait_for_api_json(
-        session,
-        f"api/sensors/{quote(f'{args.room}-co2', safe='')}",
-        f"{args.room} CO2 sensor",
-    )
-    co2_ppm = max(OUTDOOR_CO2_PPM, float(co2_sensor["value"]))
-    wait_for_api_json(
-        session,
-        f"api/actuators/{quote(f'{args.room}-watt', safe='')}",
-        f"{args.room} HVAC actuator",
-    )
-    wait_for_api_json(
-        session,
-        f"api/actuators/{quote(f'{args.room}-vent', safe='')}",
-        f"{args.room} ventilation actuator",
-    )
-    wait_for_api_json(
-        session,
-        f"api/sensors/{quote(f'{args.room}-occupancy', safe='')}",
-        f"{args.room} occupancy sensor",
-    )
-
-    topic_room = quote(args.room, safe="")
-    temperature_topic = f"{args.level}/{topic_room}/temp/sensor"
-    co2_topic = f"{args.level}/{topic_room}/co2/sensor"
     simulation_time = state_time(api_json(session, "GET", BASE_OCC, "api/state"))
     print(f"Waiting for {timestep} of occupancy-simulation time")
     try:
@@ -332,68 +413,18 @@ def main():
             duration_seconds = (next_time - interval_start).total_seconds()
             simulation_time = next_time
 
-            wattage = float(
-                api_json(
-                    session,
-                    "GET",
-                    BASE,
-                    f"api/actuators/{args.room}-watt",
-                )["state"]
-            )
-            ventilation_wattage = float(
-                api_json(
-                    session,
-                    "GET",
-                    BASE,
-                    f"api/actuators/{args.room}-vent",
-                )["state"]
-            )
-            occupants = room_occupancy(session, args.room)
             outside_temperature = outside_temperature_at(weather_by_day, next_time)
-            room["air_temperature"], room["mass_temperature"] = simulate_step(
-                air_temperature=room["air_temperature"],
-                mass_temperature=room["mass_temperature"],
-                volume_m3=room["area"] * ROOM_HEIGHT_METERS,
-                floor_area_m2=room["area"],
-                exterior_wall_length_m=room["wall_length"],
-                outside_temperature=outside_temperature,
-                setpoint=default_set_temp,
-                heater_max_watts=wattage,
-                duration_seconds=duration_seconds,
-                internal_gains_watts=occupants * SENSIBLE_HEAT_PER_OCCUPANT_W,
+            print(f"{next_time.isoformat()} | {outside_temperature:.1f} °C outside")
+            messages = simulate_rooms(
+                session,
+                rooms,
+                outside_temperature,
+                duration_seconds,
+                args.noise_stddev,
+                args.co2_noise_stddev,
             )
-
-            noisy_temperature = room["air_temperature"] + random.gauss(
-                0, args.noise_stddev
-            )
-            co2_ppm = simulate_co2_step(
-                co2_ppm=co2_ppm,
-                occupants=occupants,
-                ventilation_watts=ventilation_wattage,
-                room_volume_m3=room["area"] * ROOM_HEIGHT_METERS,
-                duration_seconds=duration_seconds,
-            )
-            noisy_co2 = max(
-                OUTDOOR_CO2_PPM,
-                co2_ppm + random.gauss(0, args.co2_noise_stddev),
-            )
-            publish.single(
-                topic=temperature_topic,
-                payload=json.dumps({"value": str(round(noisy_temperature, 2))}),
-                hostname=BROKER,
-                port=PORT,
-            )
-            publish.single(
-                topic=co2_topic,
-                payload=json.dumps({"value": str(round(noisy_co2, 1))}),
-                hostname=BROKER,
-                port=PORT,
-            )
-            print(
-                f"{next_time.isoformat()} | {occupants} occupants | "
-                f"{wattage:.0f} W HVAC | {ventilation_wattage:.0f} W vent | "
-                f"{noisy_temperature:.2f} °C | {noisy_co2:.1f} ppm CO2"
-            )
+            if messages:
+                publish.multiple(messages, hostname=BROKER, port=PORT)
     except KeyboardInterrupt:
         print("\nStopping simulation.")
     

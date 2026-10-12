@@ -1,0 +1,42 @@
+direction: down
+**.style.font-size: 22
+(** -> **)[*].style.font-size: 18
+bs: "BuildSim\n[Software System]\nSensor values, actuator state,\n3D viewer" { style.fill: "#ececec" }
+occsim: "Occupancy simulator\n[Software System]\nSimulated clock + head-count per room" { style.fill: "#ececec" }
+
+sys: "Room Climate Control  [System]  (one Compose project)" {
+  style.stroke-dash: 4
+  style.fill: transparent
+
+  rooms: "Per-room device containers  (5 per controlled room)" {
+    style.stroke-dash: 2
+    style.fill: transparent
+    occ: "Occupancy publisher\n[Container: Python]\ncon-occ.py\nCopies head-count into BuildSim"
+    sensor: "Temperature + CO₂ sensors\n[2 Containers: Python]\ncon-sensor.py\nWrite reading to BuildSim; forward"
+    act: "HVAC + ventilation actuators\n[2 Containers: Python]\ncon-hvac.py, con-vent.py\nApply command; acknowledge"
+  }
+  sim: "Physical simulator\n[Container: Python]\ncon-sim.py (one for all rooms)\nHeat + CO₂ balance per room"
+  broker: "Message broker\n[Container: Mosquitto 2]\nTopic per room / signal / hop" { shape: queue }
+  dec: "Decision maker\n[Container: Python]\ncon-dec.py (one for all rooms)\n2 PID loops per room + safety"
+  exporter: "Metrics exporter\n[Container: Python]\nmetrics-exporter.py\nBuildSim state as Prometheus text"
+  prom: "Prometheus\n[Container: Prometheus 2.54]\n5 s scrape; tmpfs storage" { shape: cylinder }
+  graf: "Dashboard\n[Container: Grafana 11]\nRoom time series"
+}
+
+sys.rooms.occ -> occsim: "Read head-counts [REST]"
+sys.rooms.occ -> bs: "Write occupancy sensor [REST]"
+sys.sim -> occsim: "Wait for 5 sim-min step [REST]"
+bs -> sys.sim: "Actuator state + occupancy [REST]"
+sys.sim -> sys.broker: "Physical value [MQTT]"
+sys.broker -> sys.rooms.sensor: "…/sensor [MQTT]"
+sys.rooms.sensor -> bs: "Write sensor value [REST]"
+sys.rooms.sensor -> sys.broker: "Reading …/dec [MQTT]"
+sys.broker -> sys.dec: "Readings + acks [MQTT]"
+sys.dec -> sys.broker: "Commands …/ac [MQTT]"
+sys.dec -> occsim: "Clock for setpoint [REST]"
+sys.broker -> sys.rooms.act: "…/ac [MQTT]"
+sys.rooms.act -> bs: "Set actuator state [REST]"
+sys.rooms.act -> sys.broker: "Ack …/actuator-status [MQTT]"
+bs -> sys.exporter: "Equipment state [REST]"
+sys.prom -> sys.exporter: "Scrape /metrics [HTTP]"
+sys.graf -> sys.prom: "PromQL [HTTP]"

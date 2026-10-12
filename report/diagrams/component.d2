@@ -1,0 +1,37 @@
+direction: down
+**.style.font-size: 22
+(** -> **)[*].style.font-size: 18
+broker: "Message broker\n[Container: Mosquitto]" { shape: queue }
+occsim: "Occupancy simulator\n[Software System]" { style.fill: "#ececec" }
+rooms: "rooms.json\n[Config file]" { shape: page }
+
+dec: "Decision maker  [Container: Python, con-dec.py]" {
+  style.stroke-dash: 4
+  style.fill: transparent
+
+  registry: "Controller registry\n[Component]\nbuild_controller(): one temp + one CO₂\ncontroller per simulated room"
+  router: "Topic router\n[Component]\non_message(): topic → controller\n(20 subscriptions for 5 rooms)"
+  ctrl: "Room controller (×2 per room)" {
+    style.fill: "#eaf2ff"
+    health: "Sensor health monitor\n[Component]\nstale > 15 s or 5 identical\nreadings → fail-safe"
+    sched: "Setpoint scheduler\n[Component]\n21 °C 06–18, else 17 °C;\nCO₂ fixed 900 ppm"
+    pid: "PID regulator\n[Component]\nclamped output, anti-windup"
+    ack: "Actuator ack monitor\n[Component]\nack within 10 s or retry"
+  }
+  pub: "Command publisher\n[Component]\npublish_wattage(): watt + command_id"
+  watchdog: "Health watchdog\n[Component]\n1 s loop over all controllers"
+}
+
+rooms -> dec.registry: "simulated rooms"
+dec.registry -> dec.router: "routes"
+broker -> dec.router: "…/dec readings, …/actuator-status acks"
+dec.router -> dec.ctrl.health: "reading"
+dec.ctrl.health -> dec.ctrl.pid: "healthy reading"
+dec.ctrl.health -> dec.pub: "fail-safe output"
+occsim -> dec.ctrl.sched: "clock [REST]"
+dec.ctrl.sched -> dec.ctrl.pid: "setpoint"
+dec.ctrl.pid -> dec.pub: "wattage"
+dec.router -> dec.ctrl.ack: "ack"
+dec.watchdog -> dec.ctrl.health: "staleness check"
+dec.watchdog -> dec.ctrl.ack: "timeout check → resend"
+dec.pub -> broker: "…/ac commands"

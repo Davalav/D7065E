@@ -3,597 +3,716 @@
         {
             "name": "A10",
             "floor": 0,
-            "walls": 2
+            "walls": 2,
+            "simulate": false
         },
         {
             "name": "A102",
             "floor": 0,
-            "walls": 9.5
+            "walls": 9.5,
+            "simulate": false
         },
         {
             "name": "A103+A112_B+A103",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A104",
             "floor": 0,
-            "walls": 10
+            "walls": 10,
+            "simulate": false
         },
         {
             "name": "A105",
             "floor": 0,
-            "walls": 2
+            "walls": 2,
+            "simulate": false
         },
         {
             "name": "A106",
             "floor": 0,
-            "walls": 7
+            "walls": 7,
+            "simulate": false
         },
         {
             "name": "A107",
             "floor": 0,
-            "walls": 8
+            "walls": 8,
+            "simulate": true
         },
         {
             "name": "A108",
             "floor": 0,
-            "walls": 8
+            "walls": 8,
+            "simulate": true
         },
         {
             "name": "A109",
             "floor": 0,
-            "walls": 16
+            "walls": 16,
+            "simulate": true
         },
         {
             "name": "A110",
             "floor": 0,
-            "walls": 8
+            "walls": 8,
+            "simulate": true
         },
         {
             "name": "A111",
             "floor": 0,
-            "walls": 16
+            "walls": 16,
+            "simulate": true
         },
         {
             "name": "A112_A",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A113",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A113A",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A113B",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A113C",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A114",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A115",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A115A",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A115B",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A116",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A116A",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A117",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A118",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A119",
             "floor": 0,
-            "walls": 3.2
+            "walls": 3.2,
+            "simulate": false
         },
         {
             "name": "A120",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A12",
             "floor": 0,
-            "walls": 22
+            "walls": 22,
+            "simulate": false
         },
         {
             "name": "A122",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A123",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A124",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A125",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A125A",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A125B",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A126",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A127",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A128",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A129",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A130",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A13",
             "floor": 0,
-            "walls": 7.5
+            "walls": 7.5,
+            "simulate": false
         },
         {
             "name": "A132",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A133",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A134",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A135",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A136",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A137",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A138",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A139",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A140",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A14",
             "floor": 0,
-            "walls": 7.5
+            "walls": 7.5,
+            "simulate": false
         },
         {
             "name": "A142",
             "floor": 0,
-            "walls": 7.2
+            "walls": 7.2,
+            "simulate": false
         },
         {
             "name": "A143",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A144",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A145",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A146",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A147",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A148",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A149",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A150",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A151",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A152",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A153",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A154",
             "floor": 0,
-            "walls": 8
+            "walls": 8,
+            "simulate": false
         },
         {
             "name": "A16",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A160",
             "floor": 0,
-            "walls": 8.3
+            "walls": 8.3,
+            "simulate": false
         },
         {
             "name": "A162",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A163",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A164",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A165",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A166",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A167",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A168",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A169",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A170",
             "floor": 0,
-            "walls": 5.3
+            "walls": 5.3,
+            "simulate": false
         },
         {
             "name": "A17",
             "floor": 0,
-            "walls": 0.6
+            "walls": 0.6,
+            "simulate": false
         },
         {
             "name": "A171A",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A171B",
             "floor": 0,
-            "walls": 1.6
+            "walls": 1.6,
+            "simulate": false
         },
         {
             "name": "A171C",
             "floor": 0,
-            "walls": 2
+            "walls": 2,
+            "simulate": false
         },
         {
             "name": "A172",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A173",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A174",
             "floor": 0,
-            "walls": 3.5
+            "walls": 3.5,
+            "simulate": false
         },
         {
             "name": "A175",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A176",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A177",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A178",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A179",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A180",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A181",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A182",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A183",
             "floor": 0,
-            "walls": 8.3
+            "walls": 8.3,
+            "simulate": false
         },
         {
             "name": "A30",
             "floor": 0,
-            "walls": 18
+            "walls": 18,
+            "simulate": false
         },
         {
             "name": "A302",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A303",
             "floor": 0,
-            "walls": 9
+            "walls": 9,
+            "simulate": false
         },
         {
             "name": "A304",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A305",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A306",
             "floor": 0,
-            "walls": 4
+            "walls": 4,
+            "simulate": false
         },
         {
             "name": "A307",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A308",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A309",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A310",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A311",
             "floor": 0,
-            "walls": 7.2
+            "walls": 7.2,
+            "simulate": false
         },
         {
             "name": "A312",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A313",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A314",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A315",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A316",
             "floor": 0,
-            "walls": 10.3
+            "walls": 10.3,
+            "simulate": false
         },
         {
             "name": "A318",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A319",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A320",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A32",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A322",
             "floor": 0,
-            "walls": 2
+            "walls": 2,
+            "simulate": false
         },
         {
             "name": "A323",
             "floor": 0,
-            "walls": 7
+            "walls": 7,
+            "simulate": false
         },
         {
             "name": "A324",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A325",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A326",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A327",
             "floor": 0,
-            "walls": 2.3
+            "walls": 2.3,
+            "simulate": false
         },
         {
             "name": "A328",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A329",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A330",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         },
         {
             "name": "A33",
             "floor": 0,
-            "walls": 0
+            "walls": 0,
+            "simulate": false
         }
     ]
 }

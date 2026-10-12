@@ -1,0 +1,35 @@
+direction: down
+**.style.font-size: 22
+(** -> **)[*].style.font-size: 18
+laptop: "Developer laptop  (Windows 11 / Linux, 4–16 GB RAM)" {
+  style.stroke-dash: 4
+  style.fill: transparent
+
+  browser: "Web browser\n[Chrome / Edge]\nGrafana :3000, BuildSim :9090,\noccupancy UI :8081"
+
+  vm: "Docker Engine  (Docker Desktop VM, 8 GB, 12 vCPU)" {
+    style.stroke-dash: 2
+    style.fill: transparent
+
+    net: "Compose network d7065e_default  (service-name DNS)" {
+      style.fill: transparent
+      course: "Course-provided images\n[buildsim, occupancysim]\nGo binaries" { style.fill: "#ececec" }
+      infra: "Infrastructure\n[mosquitto, prometheus, grafana]\nupstream images"
+      shared: "Shared services\n[sim, dec, metrics-exporter]\nd7065e-python image"
+      perroom: "Per-room services\n[occ, sensor, sensor-co2, hvac, vent] × N\nd7065e-python image"
+    }
+  }
+}
+edge: "Real deployment (not built)" {
+  style.stroke-dash: 4
+  style.fill: transparent
+  gw: "Edge gateway in the building\nsensors, actuators, decision maker"
+  cloud: "Cloud / campus server\ndashboard history, tuning studies"
+}
+laptop.browser -> laptop.vm.net.infra: "127.0.0.1 port maps only"
+laptop.browser -> laptop.vm.net.course: "127.0.0.1 port maps only"
+laptop.vm.net.shared -> laptop.vm.net.infra: "MQTT 1883"
+laptop.vm.net.perroom -> laptop.vm.net.infra: "MQTT 1883"
+laptop.vm.net.shared -> laptop.vm.net.course: "REST 9090 / 8081"
+laptop.vm.net.perroom -> laptop.vm.net.course: "REST 9090 / 8081"
+edge.gw -> edge.cloud: "off the control path"

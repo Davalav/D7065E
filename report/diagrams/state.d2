@@ -1,0 +1,20 @@
+direction: down
+**.style.font-size: 22
+(** -> **)[*].style.font-size: 18
+start: "" { shape: circle; width: 30; height: 30; style.fill: "#333333" }
+Waiting: "Waiting for data\n(no reading yet)"
+Controlling: "Controlling\nPID on each reading"
+FailSafe: "Fail-safe\nheating 0 W / ventilation 600 W"
+AwaitAck: "Awaiting ack\ncommand in flight"
+Retrying: "Retrying\nresend last command"
+
+start -> Waiting: "process start"
+Waiting -> Controlling: "first reading"
+Waiting -> FailSafe: "15 s without a reading"
+Controlling -> Controlling: "reading → setpoint check → PID"
+Controlling -> FailSafe: "stale > 15 s or\n5 identical readings"
+FailSafe -> Controlling: "a fresh, changed reading"
+Controlling -> AwaitAck: "command published"
+AwaitAck -> Controlling: "ack matches id + value"
+AwaitAck -> Retrying: "no ack within 10 s"
+Retrying -> AwaitAck: "resend; restart 10 s timer"

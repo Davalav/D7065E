@@ -2,10 +2,15 @@ import json
 import re
 from pathlib import Path
 
+from room_config import ROOMS_PATH, is_simulated, load_rooms
+
 
 ROOT = Path(__file__).resolve().parent
-ROOMS_PATH = ROOT / "JSON files" / "rooms.json"
 OUTPUT_PATH = ROOT / "services-compose.yaml"
+
+BUILDSIM_READY = {"buildsim": "service_healthy"}
+MQTT_READY = {"mosquitto": "service_healthy"}
+OCCUPANCY_READY = {"occupancysim": "service_started"}
 
 
 def yaml_string(value):
@@ -36,135 +41,118 @@ def service_block(name, command, environment, dependencies):
     return "\n".join(lines)
 
 
+def room_services(names, room_args):
+    return [
+        service_block(
+            names["occ"],
+            ["python", "-u", "con-occ.py", *room_args],
+            {
+                "BUILDSIM_URL": "http://buildsim:9090/",
+                "OCCUPANCY_URL": "http://occupancysim:8081/",
+            },
+            BUILDSIM_READY | OCCUPANCY_READY,
+        ),
+        service_block(
+            names["sensor"],
+            ["python", "-u", "con-sensor.py", *room_args],
+            {
+                "BUILDSIM_URL": "http://buildsim:9090/",
+                "MQTT_HOST": "mosquitto",
+            },
+            BUILDSIM_READY | MQTT_READY,
+        ),
+        service_block(
+            names["sensor-co2"],
+            ["python", "-u", "con-sensor.py", "--type", "co2", *room_args],
+            {
+                "BUILDSIM_URL": "http://buildsim:9090/",
+                "MQTT_HOST": "mosquitto",
+            },
+            BUILDSIM_READY | MQTT_READY,
+        ),
+        service_block(
+            names["hvac"],
+            ["python", "-u", "con-hvac.py", *room_args],
+            {
+                "BUILDSIM_URL": "http://buildsim:9090/",
+                "MQTT_HOST": "mosquitto",
+            },
+            BUILDSIM_READY | MQTT_READY,
+        ),
+        service_block(
+            names["vent"],
+            ["python", "-u", "con-vent.py", *room_args],
+            {
+                "BUILDSIM_URL": "http://buildsim:9090/",
+                "MQTT_HOST": "mosquitto",
+            },
+            BUILDSIM_READY | MQTT_READY,
+        ),
+    ]
+
+
 def main():
-    rooms = json.loads(ROOMS_PATH.read_text(encoding="utf-8"))["rooms"]
+    rooms = load_rooms()
     services = []
     service_names = set()
+    controlled_services = []
+    simulated_services = []
+    room_count = 0
 
     for index, room in enumerate(rooms):
+        if not is_simulated(room):
+            continue
+        room_count += 1
         room_name = room["name"]
         level = str(room["floor"])
         slug = re.sub(r"[^a-z0-9]+", "-", room_name.lower()).strip("-")
         prefix = f"r{index:03d}-{slug}"
         names = {
             kind: f"{kind}-{prefix}"
-            for kind in (
-                "occ",
-                "sensor",
-                "sensor-co2",
-                "hvac",
-                "dec",
-                "dec-co2",
-                "vent",
-                "sim",
-            )
+            for kind in ("occ", "sensor", "sensor-co2", "hvac", "vent")
         }
         if service_names.intersection(names.values()):
             raise ValueError(f"Duplicate generated service name for {room_name!r}")
         service_names.update(names.values())
 
-        room_args = ["--level", level, "--room", room_name]
-        buildsim_ready = {"buildsim": "service_healthy"}
-        mqtt_ready = {"mosquitto": "service_healthy"}
-        occupancy_ready = {"occupancysim": "service_healthy"}
-
-        services.extend(
-            [
-                service_block(
-                    names["occ"],
-                    ["python", "-u", "con-occ.py", *room_args],
-                    {
-                        "BUILDSIM_URL": "http://buildsim:9090/",
-                        "OCCUPANCY_URL": "http://occupancysim:8081/",
-                    },
-                    buildsim_ready | occupancy_ready,
-                ),
-                service_block(
-                    names["sensor"],
-                    ["python", "-u", "con-sensor.py", *room_args],
-                    {
-                        "BUILDSIM_URL": "http://buildsim:9090/",
-                        "MQTT_HOST": "mosquitto",
-                    },
-                    buildsim_ready | mqtt_ready,
-                ),
-                service_block(
-                    names["sensor-co2"],
-                    ["python", "-u", "con-sensor.py", "--type", "co2", *room_args],
-                    {
-                        "BUILDSIM_URL": "http://buildsim:9090/",
-                        "MQTT_HOST": "mosquitto",
-                    },
-                    buildsim_ready | mqtt_ready,
-                ),
-                service_block(
-                    names["hvac"],
-                    ["python", "-u", "con-hvac.py", *room_args],
-                    {
-                        "BUILDSIM_URL": "http://buildsim:9090/",
-                        "MQTT_HOST": "mosquitto",
-                    },
-                    buildsim_ready | mqtt_ready,
-                ),
-                service_block(
-                    names["dec"],
-                    [
-                        "python", "-u", "con-dec.py", *room_args,
-                        "--kp", "1000", "--ki", "10", "--kd", "0",
-                        "--max-watts", "30000",
-                    ],
-                    {
-                        "MQTT_HOST": "mosquitto",
-                        "OCCUPANCY_URL": "http://occupancysim:8081",
-                    },
-                    mqtt_ready
-                    | occupancy_ready
-                    | {names["sensor"]: "service_started", names["hvac"]: "service_started"},
-                ),
-                service_block(
-                    names["dec-co2"],
-                    [
-                        "python", "-u", "con-dec.py", "--type", "co2", *room_args,
-                        "--setpoint", "900", "--kp", "5", "--ki", "0.001",
-                        "--kd", "0",
-                    ],
-                    {"MQTT_HOST": "mosquitto"},
-                    mqtt_ready
-                    | {
-                        names["sensor-co2"]: "service_started",
-                        names["vent"]: "service_started",
-                    },
-                ),
-                service_block(
-                    names["vent"],
-                    ["python", "-u", "con-vent.py", *room_args],
-                    {
-                        "BUILDSIM_URL": "http://buildsim:9090/",
-                        "MQTT_HOST": "mosquitto",
-                    },
-                    buildsim_ready | mqtt_ready,
-                ),
-                service_block(
-                    names["sim"],
-                    ["python", "-u", "con-sim.py", *room_args],
-                    {
-                        "BUILDSIM_URL": "http://buildsim:9090/",
-                        "OCCUPANCY_URL": "http://occupancysim:8081/",
-                        "MQTT_HOST": "mosquitto",
-                    },
-                    buildsim_ready
-                    | occupancy_ready
-                    | {
-                        names["occ"]: "service_started",
-                        names["sensor"]: "service_started",
-                        names["sensor-co2"]: "service_started",
-                        names["hvac"]: "service_started",
-                        names["vent"]: "service_started",
-                        "mosquitto": "service_healthy",
-                    },
-                ),
-            ]
+        services.extend(room_services(names, ["--level", level, "--room", room_name]))
+        controlled_services.extend(
+            names[kind] for kind in ("sensor", "sensor-co2", "hvac", "vent")
         )
+        simulated_services.extend(names.values())
+
+    if not room_count:
+        raise ValueError(f'No rooms in {ROOMS_PATH.name} have "simulate": true')
+
+    # One decision maker and one simulator serve every room above.
+    services.extend(
+        [
+            service_block(
+                "dec",
+                ["python", "-u", "con-dec.py"],
+                {
+                    "MQTT_HOST": "mosquitto",
+                    "OCCUPANCY_URL": "http://occupancysim:8081",
+                },
+                MQTT_READY
+                | OCCUPANCY_READY
+                | {name: "service_started" for name in controlled_services},
+            ),
+            service_block(
+                "sim",
+                ["python", "-u", "con-sim.py"],
+                {
+                    "BUILDSIM_URL": "http://buildsim:9090/",
+                    "OCCUPANCY_URL": "http://occupancysim:8081/",
+                    "MQTT_HOST": "mosquitto",
+                },
+                BUILDSIM_READY
+                | OCCUPANCY_READY
+                | MQTT_READY
+                | {name: "service_started" for name in simulated_services},
+            ),
+        ]
+    )
 
     content = "\n".join(
         [
@@ -182,7 +170,10 @@ def main():
         ]
     )
     OUTPUT_PATH.write_text(content, encoding="utf-8")
-    print(f"Wrote {len(services)} room-specific services to {OUTPUT_PATH.name}")
+    print(
+        f"Wrote {len(services)} services for {room_count} rooms "
+        f"to {OUTPUT_PATH.name}"
+    )
 
 
 if __name__ == "__main__":

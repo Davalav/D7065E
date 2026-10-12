@@ -1,0 +1,15 @@
+direction: right
+**.style.font-size: 22
+(** -> **)[*].style.font-size: 18
+bs: "BuildSim\n[equipment registry]\nlatest sensor value +\nactuator state per room" { style.fill: "#ececec" }
+occsim: "Occupancy simulator\n[clock]" { style.fill: "#ececec" }
+weather: "Weather.json\n[3-hourly, Mon–Fri]" { shape: page }
+exp: "Metrics exporter\n[Python, on demand]\nGET /api/equipment +\n/api/state per scrape"
+prom: "Prometheus\n[tmpfs TSDB]\n5 s scrape, lost on restart" { shape: cylinder }
+graf: "Grafana\n[dashboard]\nroom filter, 5 s refresh"
+
+bs -> exp: "REST"
+occsim -> exp: "REST"
+weather -> exp: "outside temp"
+exp -> prom: "8 gauges"
+prom -> graf: "PromQL"

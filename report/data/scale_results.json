@@ -1,0 +1,263 @@
+[
+  {
+    "rooms": 5,
+    "containers_running": 33,
+    "project_mem_MiB": 778,
+    "python_container_mean_MiB": 19.4,
+    "vm_used_MiB": 1911,
+    "vm_total_MiB": 7789,
+    "restarts": 0,
+    "up_s": 24,
+    "first_step_after_up_s": 9,
+    "steps": 31,
+    "step_work_p50_ms": 26.6,
+    "step_work_max_ms": 70.9,
+    "interval_p50_s": 5.09,
+    "latency_total_p50_ms": 63.4,
+    "latency_total_p95_ms": 122.9,
+    "missing_decisions": 0,
+    "expected_decisions": 290,
+    "stuck_alarms": 0,
+    "memory_by_kind": {
+      "buildsim": {
+        "count": 1,
+        "mean_MiB": 46.54,
+        "total_MiB": 46.54
+      },
+      "dec": {
+        "count": 1,
+        "mean_MiB": 19.63,
+        "total_MiB": 19.63
+      },
+      "grafana": {
+        "count": 1,
+        "mean_MiB": 104.1,
+        "total_MiB": 104.1
+      },
+      "hvac": {
+        "count": 5,
+        "mean_MiB": 18.53,
+        "total_MiB": 92.65
+      },
+      "metrics-exporter": {
+        "count": 1,
+        "mean_MiB": 16.57,
+        "total_MiB": 16.57
+      },
+      "mosquitto": {
+        "count": 1,
+        "mean_MiB": 7.973,
+        "total_MiB": 7.973
+      },
+      "occ": {
+        "count": 5,
+        "mean_MiB": 20.406,
+        "total_MiB": 102.03
+      },
+      "occupancysim": {
+        "count": 1,
+        "mean_MiB": 18.72,
+        "total_MiB": 18.72
+      },
+      "prometheus": {
+        "count": 1,
+        "mean_MiB": 57.66,
+        "total_MiB": 57.66
+      },
+      "sensor": {
+        "count": 5,
+        "mean_MiB": 18.5,
+        "total_MiB": 92.5
+      },
+      "sensor-co2": {
+        "count": 5,
+        "mean_MiB": 18.458000000000002,
+        "total_MiB": 92.29
+      },
+      "sim": {
+        "count": 1,
+        "mean_MiB": 29.47,
+        "total_MiB": 29.47
+      },
+      "vent": {
+        "count": 5,
+        "mean_MiB": 19.502,
+        "total_MiB": 97.51
+      }
+    }
+  },
+  {
+    "rooms": 20,
+    "containers_running": 108,
+    "project_mem_MiB": 2106,
+    "python_container_mean_MiB": 18.9,
+    "vm_used_MiB": 3634,
+    "vm_total_MiB": 7789,
+    "restarts": 0,
+    "up_s": 131,
+    "first_step_after_up_s": 7,
+    "steps": 31,
+    "step_work_p50_ms": 110.6,
+    "step_work_max_ms": 165.5,
+    "interval_p50_s": 5.16,
+    "latency_total_p50_ms": 193.1,
+    "latency_total_p95_ms": 279.9,
+    "missing_decisions": 4,
+    "expected_decisions": 1160,
+    "stuck_alarms": 8,
+    "memory_by_kind": {
+      "buildsim": {
+        "count": 1,
+        "mean_MiB": 24.23,
+        "total_MiB": 24.23
+      },
+      "dec": {
+        "count": 1,
+        "mean_MiB": 20.11,
+        "total_MiB": 20.11
+      },
+      "grafana": {
+        "count": 1,
+        "mean_MiB": 66.13,
+        "total_MiB": 66.13
+      },
+      "hvac": {
+        "count": 20,
+        "mean_MiB": 18.5905,
+        "total_MiB": 371.80999999999995
+      },
+      "metrics-exporter": {
+        "count": 1,
+        "mean_MiB": 14.52,
+        "total_MiB": 14.52
+      },
+      "mosquitto": {
+        "count": 1,
+        "mean_MiB": 4.453,
+        "total_MiB": 4.453
+      },
+      "occ": {
+        "count": 20,
+        "mean_MiB": 20.0995,
+        "total_MiB": 401.98999999999995
+      },
+      "occupancysim": {
+        "count": 1,
+        "mean_MiB": 17.55,
+        "total_MiB": 17.55
+      },
+      "prometheus": {
+        "count": 1,
+        "mean_MiB": 46.12,
+        "total_MiB": 46.12
+      },
+      "sensor": {
+        "count": 20,
+        "mean_MiB": 18.4675,
+        "total_MiB": 369.3499999999999
+      },
+      "sensor-co2": {
+        "count": 20,
+        "mean_MiB": 18.471,
+        "total_MiB": 369.41999999999985
+      },
+      "sim": {
+        "count": 1,
+        "mean_MiB": 28.75,
+        "total_MiB": 28.75
+      },
+      "vent": {
+        "count": 20,
+        "mean_MiB": 18.5635,
+        "total_MiB": 371.2699999999999
+      }
+    }
+  },
+  {
+    "rooms": 40,
+    "containers_running": 208,
+    "project_mem_MiB": 4073,
+    "python_container_mean_MiB": 18.9,
+    "vm_used_MiB": 5966,
+    "vm_total_MiB": 7789,
+    "restarts": 0,
+    "up_s": 144,
+    "first_step_after_up_s": 9,
+    "steps": 31,
+    "step_work_p50_ms": 253.0,
+    "step_work_max_ms": 428.6,
+    "interval_p50_s": 5.3,
+    "latency_total_p50_ms": 570.9,
+    "latency_total_p95_ms": 703.9,
+    "missing_decisions": 0,
+    "expected_decisions": 2320,
+    "stuck_alarms": 1,
+    "memory_by_kind": {
+      "buildsim": {
+        "count": 1,
+        "mean_MiB": 44.3,
+        "total_MiB": 44.3
+      },
+      "dec": {
+        "count": 1,
+        "mean_MiB": 21.21,
+        "total_MiB": 21.21
+      },
+      "grafana": {
+        "count": 1,
+        "mean_MiB": 104.2,
+        "total_MiB": 104.2
+      },
+      "hvac": {
+        "count": 40,
+        "mean_MiB": 18.605999999999998,
+        "total_MiB": 744.24
+      },
+      "metrics-exporter": {
+        "count": 1,
+        "mean_MiB": 15.11,
+        "total_MiB": 15.11
+      },
+      "mosquitto": {
+        "count": 1,
+        "mean_MiB": 9.715,
+        "total_MiB": 9.715
+      },
+      "occ": {
+        "count": 40,
+        "mean_MiB": 19.78,
+        "total_MiB": 791.2
+      },
+      "occupancysim": {
+        "count": 1,
+        "mean_MiB": 19.36,
+        "total_MiB": 19.36
+      },
+      "prometheus": {
+        "count": 1,
+        "mean_MiB": 57.64,
+        "total_MiB": 57.64
+      },
+      "sensor": {
+        "count": 40,
+        "mean_MiB": 18.52725,
+        "total_MiB": 741.0900000000003
+      },
+      "sensor-co2": {
+        "count": 40,
+        "mean_MiB": 18.504,
+        "total_MiB": 740.1600000000003
+      },
+      "sim": {
+        "count": 1,
+        "mean_MiB": 28.17,
+        "total_MiB": 28.17
+      },
+      "vent": {
+        "count": 40,
+        "mean_MiB": 18.91425,
+        "total_MiB": 756.5699999999996
+      }
+    }
+  }
+]

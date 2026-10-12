@@ -1,0 +1,26 @@
+shape: sequence_diagram
+**.style.font-size: 20
+(** -> **)[*].style.font-size: 18
+occsim: Occupancy simulator
+sim: Physical simulator
+bs: BuildSim
+sensor: CO₂ sensor (A108)
+broker: MQTT broker
+dec: Decision maker
+vent: Ventilation actuator (A108)
+
+sim -> occsim: "1: GET /api/state until the clock passes 5 sim-min (Mon 08:19:47)"
+sim -> bs: "2: GET A108-watt (2839 W), A108-vent (32 W), A108-occupancy (29)"
+sim -> sim: "3: heat + CO₂ step for every room; A108 CO₂ + noise = 956.6 ppm"
+sim -> broker: "4: publish 0/A108/co2/sensor {value: 956.6}"
+broker -> sensor: "5: deliver"
+sensor -> bs: "6: PUT /api/sensors/A108-co2/value"
+sensor -> broker: "7: publish 0/A108/co2/dec {value: 956.6}"
+broker -> dec: "8: deliver; router picks the A108 CO₂ controller"
+dec -> dec: "9: reading healthy; PID(956.6 vs 900 ppm) = 283.32 W"
+dec -> broker: "10: publish 0/A108/co2/ac {watt: 283.32, command_id: 7}"
+broker -> vent: "11: deliver"
+vent -> bs: "12: PUT /api/actuators/A108-vent/state, then GET (283.32)"
+vent -> broker: "13: publish 0/A108/co2/actuator-status {command_id: 7, state: 283.32}"
+broker -> dec: "14: deliver; command 7 confirmed 50 ms after step 9"
+sim -> bs: "15: next step (08:24:53) reads A108-vent = 283 W → 1.4 ACH; CO₂ 911.6 ppm"

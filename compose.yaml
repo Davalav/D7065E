@@ -47,12 +47,11 @@ services:
     depends_on:
       buildsim:
         condition: service_healthy
+    # The scratch image has no shell or curl, and /occupancy has no health
+    # subcommand (it would start a second simulator), so dependents only wait
+    # for the container to start and retry until the API answers.
     healthcheck:
-      test: ["CMD", "/occupancy", "health", "--url", "http://127.0.0.1:8081/healthz"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
+      disable: true
     restart: unless-stopped
   metrics-exporter:
     build:
@@ -67,7 +66,7 @@ services:
       buildsim:
         condition: service_healthy
       occupancysim:
-        condition: service_healthy
+        condition: service_started
     restart: unless-stopped
   prometheus:
     image: prom/prometheus:v2.54.1

@@ -1,0 +1,17 @@
+direction: right
+**.style.font-size: 22
+(** -> **)[*].style.font-size: 18
+clock: "Occupancy simulator clock\n+5 simulated minutes" { style.fill: "#ececec" }
+read: "Read inputs (per room)\nHVAC W, vent W, occupants\n[BuildSim REST]"
+heat: "Heat balance\nair node ↔ thermal mass\n− envelope + ventilation loss\n+ HVAC + 75 W / person"
+co2: "CO₂ balance\nexact exponential step\n5 mL/s per person,\n0–3 ACH from vent W"
+pub: "Add noise, publish\nσ = 0.2 °C, σ = 10 ppm\n[MQTT to sensors]"
+ctrl: "Sensors → decision maker\n→ actuators → BuildSim" { style.stroke-dash: 3 }
+
+clock -> read
+read -> heat
+read -> co2
+heat -> pub
+co2 -> pub
+pub -> ctrl
+ctrl -> read: "new actuator state\n(closes the loop)"

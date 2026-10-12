@@ -37,6 +37,7 @@ class FakeClient:
 def controller_state(sensor_type="temp"):
     setpoint = 21 if sensor_type == "temp" else 900
     return {
+        "room": "A109",
         "listen_topic": f"0/A109/{sensor_type}/dec",
         "send_topic": f"0/A109/{sensor_type}/ac",
         "ack_topic": f"0/A109/{sensor_type}/actuator-status",
@@ -179,7 +180,7 @@ class ControlScenarioTests(unittest.TestCase):
                     con_dec, "current_setpoint", return_value=state["configured_setpoint"]
                 ):
                     for _ in range(5):
-                        con_dec.on_message(
+                        con_dec.handle_message(
                             client,
                             state,
                             type(
@@ -206,7 +207,7 @@ class ControlScenarioTests(unittest.TestCase):
                 with patch.object(con_dec.time, "monotonic", return_value=2), patch.object(
                     con_dec, "current_setpoint", return_value=state["configured_setpoint"]
                 ):
-                    con_dec.on_message(client, state, message)
+                    con_dec.handle_message(client, state, message)
                 self.assertFalse(state["fail_safe"])
 
     def test_stuck_or_crashed_actuator_is_detected_retried_and_recovers(self):
@@ -235,6 +236,68 @@ class ControlScenarioTests(unittest.TestCase):
 
         state["actuator_monitor"].command_sent(8, 250, now=40)
         self.assertTrue(state["actuator_monitor"].acknowledge(8, 250))
+
+    def test_single_decision_maker_routes_each_room_to_its_own_controller(self):
+        controllers = [
+            con_dec.build_controller("0", room, sensor_type)
+            for room in ("A107", "A108")
+            for sensor_type in con_dec.CONTROLLER_SETTINGS
+        ]
+        userdata = {
+            "controllers": controllers,
+            "routes": con_dec.build_routes(controllers),
+        }
+        self.assertEqual(len(userdata["routes"]), 8)
+        client = FakeClient()
+        message = type(
+            "Message",
+            (),
+            {"topic": "0/A108/co2/dec", "payload": b'{"value":"1200"}'},
+        )()
+
+        con_dec.on_message(client, userdata, message)
+
+        self.assertEqual(len(client.messages), 1)
+        topic, command = client.messages[0]
+        self.assertEqual(topic, "0/A108/co2/ac")
+        self.assertEqual(float(command["watt"]), 600.0)
+        untouched = [c for c in controllers if c["listen_topic"] != message.topic]
+        self.assertTrue(all(c["next_command_id"] == 1 for c in untouched))
+
+    def test_simulator_keeps_other_rooms_running_when_one_room_fails(self):
+        rooms = [
+            {
+                "name": name,
+                "area": 50.0,
+                "wall_length": 8.0,
+                "air_temperature": 20.0,
+                "mass_temperature": 20.0,
+                "co2_ppm": 600.0,
+                "temperature_topic": f"0/{name}/temp/sensor",
+                "co2_topic": f"0/{name}/co2/sensor",
+            }
+            for name in ("A107", "A108")
+        ]
+
+        def fake_api_json(session, method, base_url, path):
+            if "A107" in path:
+                raise con_sim.requests.ConnectionError("buildsim unavailable")
+            return {"state": "0", "value": "0"}
+
+        with patch.object(con_sim, "api_json", side_effect=fake_api_json), \
+                self.assertLogs(level="ERROR") as logs:
+            messages = con_sim.simulate_rooms(
+                None, rooms, outside_temperature=0.0, duration_seconds=300,
+                noise_stddev=0, co2_noise_stddev=0,
+            )
+
+        self.assertIn("A107", logs.output[0])
+        self.assertEqual(
+            [message["topic"] for message in messages],
+            ["0/A108/temp/sensor", "0/A108/co2/sensor"],
+        )
+        self.assertEqual(rooms[0]["air_temperature"], 20.0)
+        self.assertLess(rooms[1]["air_temperature"], 20.0)
 
 
 if __name__ == "__main__":

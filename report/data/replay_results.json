@@ -1,0 +1,134 @@
+{
+  "A107": {
+    "deployed": {
+      "energy_kWh": 163.0147271869474,
+      "hours_to_20.5C": 7.509999999999999,
+      "day_in_band_pct": 58.85167464114833,
+      "co2_peak_ppm": 944.3410933459331,
+      "occupied_above_1000_pct": 0.0
+    },
+    "constant21": {
+      "energy_kWh": 226.6695798496786,
+      "hours_to_20.5C": 7.509999999999999,
+      "day_in_band_pct": 100.0,
+      "co2_peak_ppm": 944.3410933459331,
+      "occupied_above_1000_pct": 0.0
+    },
+    "area_fixed": {
+      "energy_kWh": 45.67830267278604,
+      "hours_to_20.5C": 2.7849999999999993,
+      "day_in_band_pct": 92.0754716981132,
+      "co2_peak_ppm": 1021.8579187692351,
+      "occupied_above_1000_pct": 25.925925925925927
+    },
+    "deployed_vs_measured_temp_rmse_C": 0.2145591814357248,
+    "measured_energy_kWh": 158.54083333333332
+  },
+  "A108": {
+    "deployed": {
+      "energy_kWh": 151.456085443799,
+      "hours_to_20.5C": 6.076999999999999,
+      "day_in_band_pct": 59.29203539823009,
+      "co2_peak_ppm": 944.0974723003037,
+      "occupied_above_1000_pct": 0.0
+    },
+    "constant21": {
+      "energy_kWh": 217.16579740956982,
+      "hours_to_20.5C": 6.076999999999999,
+      "day_in_band_pct": 100.0,
+      "co2_peak_ppm": 944.0974723003037,
+      "occupied_above_1000_pct": 0.0
+    },
+    "area_fixed": {
+      "energy_kWh": 40.613028415646916,
+      "hours_to_20.5C": 0.6749999999999998,
+      "day_in_band_pct": 97.24137931034483,
+      "co2_peak_ppm": 1018.5564406367952,
+      "occupied_above_1000_pct": 14.893617021276595
+    },
+    "deployed_vs_measured_temp_rmse_C": 0.20939044270868334,
+    "measured_energy_kWh": 149.85941666666668
+  },
+  "A109": {
+    "deployed": {
+      "energy_kWh": 238.31714367518146,
+      "hours_to_20.5C": 30.632999999999996,
+      "day_in_band_pct": 52.56410256410256,
+      "co2_peak_ppm": 747.5014864149163,
+      "occupied_above_1000_pct": 0.0
+    },
+    "constant21": {
+      "energy_kWh": 352.59782426382804,
+      "hours_to_20.5C": 10.133,
+      "day_in_band_pct": 98.91304347826087,
+      "co2_peak_ppm": 747.5014864149163,
+      "occupied_above_1000_pct": 0.0
+    },
+    "area_fixed": {
+      "energy_kWh": 72.05491206888627,
+      "hours_to_20.5C": 3.797999999999999,
+      "day_in_band_pct": 86.16600790513834,
+      "co2_peak_ppm": 970.8329716923844,
+      "occupied_above_1000_pct": 0.0
+    },
+    "deployed_vs_measured_temp_rmse_C": 0.20674796366791892,
+    "measured_energy_kWh": 229.04641666666666
+  },
+  "A110": {
+    "deployed": {
+      "energy_kWh": 150.0346260331523,
+      "hours_to_20.5C": 7.4270000000000005,
+      "day_in_band_pct": 55.714285714285715,
+      "co2_peak_ppm": 943.312074155925,
+      "occupied_above_1000_pct": 0.0
+    },
+    "constant21": {
+      "energy_kWh": 215.07921773763485,
+      "hours_to_20.5C": 7.4270000000000005,
+      "day_in_band_pct": 100.0,
+      "co2_peak_ppm": 943.312074155925,
+      "occupied_above_1000_pct": 0.0
+    },
+    "area_fixed": {
+      "energy_kWh": 40.79146452452408,
+      "hours_to_20.5C": 2.2779999999999996,
+      "day_in_band_pct": 95.9409594095941,
+      "co2_peak_ppm": 1011.1804605898345,
+      "occupied_above_1000_pct": 7.017543859649122
+    },
+    "deployed_vs_measured_temp_rmse_C": 0.20690244348412118,
+    "measured_energy_kWh": 148.65141666666668
+  },
+  "A111": {
+    "deployed": {
+      "energy_kWh": 164.81706094790817,
+      "hours_to_20.5C": 7.762999999999999,
+      "day_in_band_pct": 57.28155339805825,
+      "co2_peak_ppm": 930.3060654018027,
+      "occupied_above_1000_pct": 0.0
+    },
+    "constant21": {
+      "energy_kWh": 234.5206769796974,
+      "hours_to_20.5C": 7.762999999999999,
+      "day_in_band_pct": 100.0,
+      "co2_peak_ppm": 930.3060654018027,
+      "occupied_above_1000_pct": 0.0
+    },
+    "area_fixed": {
+      "energy_kWh": 48.83229530582323,
+      "hours_to_20.5C": 3.377,
+      "day_in_band_pct": 95.73643410852713,
+      "co2_peak_ppm": 995.4656698900023,
+      "occupied_above_1000_pct": 0.0
+    },
+    "deployed_vs_measured_temp_rmse_C": 0.21479376422900262,
+    "measured_energy_kWh": 162.37866666666667
+  },
+  "totals_kWh": {
+    "deployed": 867.6396432869884,
+    "constant21": 1246.0330962404087,
+    "area_fixed": 247.97000298766656,
+    "measured": 848.47675
+  },
+  "setback_saving_pct": 30.36784930473575
+}

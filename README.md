@@ -3,7 +3,8 @@
 ## Starta hela simuleringen (från D7065E-code):
 <!-- ./../D7065E-buildsim/buildingsim/buildsim start --port 9090 -->
 `compose.yaml` contains shared infrastructure and `services-compose.yaml`
-contains the `con-*` services generated for every room in `JSON files/rooms.json`.
+contains the `con-*` services generated for every room in `JSON files/rooms.json`
+that has `"simulate": true` (rooms without the key are simulated too).
 Regenerate the room services after changing that list with
 `python yaml_generate.py`, then start everything with:
 
@@ -32,8 +33,9 @@ its container is restarted. Grafana configuration remains in the
 `grafana-data` volume.
 
 Each configured room receives its own temperature and CO₂ sensors, occupancy
-publisher, HVAC and ventilation actuators, PID controllers, and physics
-simulation. The room simulation models occupant CO₂ generation and ventilation
+publisher, and HVAC and ventilation actuators. A single `dec` container runs the
+temperature and CO₂ PID controllers for every room, and a single `sim` container
+runs the physics simulation for every room. The room simulation models occupant CO₂ generation and ventilation
 with outdoor air at 420 ppm; each CO₂ controller targets 900 ppm and adjusts
 ventilation between 0 and 600 watt-equivalent units (mapped to 0–3 air changes
 per hour). Grafana shows that command separately from HVAC power consumption.
