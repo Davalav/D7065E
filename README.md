@@ -13,7 +13,7 @@ python sim.py Alfa --delay-seconds 0
 ## Actuator:
 python sensors.py Alfa
 
-## Lecture occupancy publisher:
+## Lecture occupancy sensor:
 python con-occ.py
 
 ## Öppna databasen:
@@ -54,7 +54,7 @@ send to sensor with noise
 wait for 5 min in occ
 get time from occ
 read from lecture file
-publish to buildsim and occ
+write occupancy counts to occupancy sensors in buildsim
 
 ### sensor
 receive from sim
