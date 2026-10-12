@@ -82,13 +82,13 @@ def on_message(client, userdata, msg):
     reading = json.loads(msg.payload.decode("utf-8"))
     sensor["value"] = str(reading["value"])
     
-    json = {
+    data = {
         "data_type": sensor["data_type"],
         "value": reading["value"]
     }
     response = requests.put(
-        f"{BASE}api/sensors/{sensor['id']}",
-        json=json,
+        f"{BASE}api/sensors/{sensor['id']}/value",
+        json=data,
         headers=headers,
     )
     response.raise_for_status()
