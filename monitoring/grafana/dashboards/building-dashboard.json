@@ -357,7 +357,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "15s",
+  "refresh": "5s",
   "schemaVersion": 39,
   "style": "dark",
   "tags": [
@@ -404,7 +404,7 @@
     "to": "now"
   },
   "timepicker": {},
-  "timezone": "browser",
+  "timezone": "Europe/Stockholm",
   "title": "Building simulation",
   "uid": "building-simulation",
   "version": 2,
